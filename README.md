@@ -7,3 +7,6 @@ This repository is home to documentation and code for the MoBaPsychGen QC pipeli
 This is the reference that should be cited by work based on either the data, procedures, or code from the MoBaPsychGen QC pipeline. 
 
 ## Structure
+
+* [qc-modules](qc-modules) - Documents with listing QC steps of each module.
+* [scripts](scripts) - Scripts used throughout the QC pipeline.
