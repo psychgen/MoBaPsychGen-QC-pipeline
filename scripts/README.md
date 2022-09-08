@@ -257,3 +257,105 @@ draw thresholds.
 * `pcadata` - file path to the pca data
 * `outprefix` - prefix of the output plots
 * `customfile` - custom file with single line containing the filtering thresholds (e.g., PC1 > -0.02 & PC1 < 0 & PC2 > -0.005 & PC2 < 0.01)
+
+### plot-sex.R
+
+**Function**
+This script is to plot F vs missingness for X chromosome stratifies by reported sex.
+
+**Usage** ``Rscript input title legendpos output``
+
+**Arguments**
+  * `input` - the name of the file containing F and  missingness data for X chromosome 
+  * `title` - part of the title to be given to the plot, it should reflect the tag of the batch from plot-PLINK file and the subpopulation/round of the QC
+  * `legendpos` - the position of legend: topleft, topright, bottomleft, bottomright
+  * `output` - the name of the output file to be created
+  
+**Example**
+```
+Rscript plot-sex.R m24-tz-eur-2-chr23-plot.txt "M24 EUR,round two" bottomright m24-tz-eur-2-sex-plot.png
+```
+
+### plot-kinship-histogram.R
+
+**Function**
+This script plots a histogram of Kinship between families as estimated by KING
+
+**Usage** ``Rscript input output``
+
+**Arguments**
+ * `input` - the name of the input file  
+ * `output` - the name of the output file to be created
+  
+**Example**
+```
+Rscript plot-kinship-histogram.R m12good-ec-eur-king-1.ibs0 m12good-ec-eur-king-1-hist
+```
+
+### cryptic-plot.R
+
+**Function**
+This script plots sums of kinships and counts of individuals with whom one shares at least 2.5% of kinship.
+
+**Usage** ``Rscript input1 input2 tag``
+
+**Arguments**
+ * `input1` - the name of the file containing sums of kinships of at least 2.5% per individual
+ * `input2` - the name of the file containing counts of kinships of at least 2.5% per individual
+ * `tag` - the tag of your batch as specified in plot-PLINK file
+ * `outprefix` - prefix of the output plots
+  
+ **Example**
+ ```
+ Rscript cryptic-plot.R m24-tz-eur-cryptic-1-kinship-sum.txt m24-tz-eur-cryptic-counts.txt "M24 EUR" m24-tz-eur-kinship-sum-and-count
+ ``` 
+### plot-batch-PCs.R
+
+**Function**
+This script plots the first 10 PCs of the batch PCA alone.
+
+**Usage** ``Rscript input title legendpos output``
+
+**Arguments**
+* `input` - the name of the file containing PCs 
+* `title` - part of the title to be given to the plot, it should reflect the tag of the batch from plot-PLINK file and the subpopulation/round of the QC
+* `legendpos` - the position of legend: topleft, topright, bottomleft, bottomright
+* `output` - the name of the output file to be created
+  
+**Example**
+```
+Rscript plot-batch-PCs.R m24-tz-eur-1-keep-pca-fam.txt "M24 EUR" bottomright m24-tz-eur-1-pca.png
+```
+
+### anova-for-PC-vs-plates.R
+
+**Function**
+This script runs ANOVA for the frist 10 PCs against the plates on which the samples were genotyped to test for batch effects.
+
+**Usage** ``Rscript input output``
+
+**Arguments**
+* `input` - the name of the file containing the PCs and the plate IDs
+* `output` - the name of the output file to be created
+  
+**Example**
+```
+Rscript anova-for-PC-vs-plates.R m24-tz-eur-3-pca-plates.txt m24-tz-eur-3-pca-anova-results.txt
+```
+
+### plot-PC-by-plate.R
+
+**Function**
+This script creates PC plot(s) colored by plate.
+
+**Usage** ``Rscript input tag output``
+
+**Arguments**
+* `input` - the name of the file containing PCs and plate IDs
+* `tag` - tag corresponding to your batch (from plot-PLINK file) and population you are QC-ing
+* `output` - the name of the output file(s) to be created
+  
+**Example**
+```
+Rscript plot-PC-by-plate.R m24-tz-eur-3-pca-plates.txt "m24 EUR" m24-tz-eur
+```
