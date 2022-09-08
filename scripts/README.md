@@ -12,6 +12,7 @@
 * [create-liftover-input.R](#create-liftover-inputr)
 * [merge-relatedness-rt.R](#merge-relatedness-rtr)
 * [create-relplot.sh](#create-relplotsh)
+* [select-subsamples-on-pca-without1kg.R](#select-subsamples-on-pca-without1kg)
 
 ## Summary of scripts
 
@@ -241,3 +242,18 @@ Default legend positions will be applied without input of legendpos.
 ```
 sh create-relplot.sh rotterdam1-yc-eur-king-1_relplot.R "Rotterdam1 EUR" topright bottomright topright bottomright
 ```
+
+### select-subsamples-on-pca-without1kg.R
+
+**Function**
+This script selects core (e.g. European, African, Asian) subsamples based provided
+thresholds from PCA of the study data without 1KG and generates a text file
+containing the list of selected individuals per core subsample based on the
+draw thresholds.
+
+**Usage** `` Rscript select-subsamples-on-pca-without1kg.R pcadata outprefix customfile``
+
+**Arguments** 
+* `pcadata` - file path to the pca data
+* `outprefix` - prefix of the output plots
+* `customfile` - file customized with thresholds for the plots
