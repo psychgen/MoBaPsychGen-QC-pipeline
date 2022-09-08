@@ -1,0 +1,7 @@
+eur_zoom_threshold: PC1 > -0.001
+eur_draw_ellipse: centerx=0.0033, centery=0.0005, firstdiameter=0.0045, seconddiameter=0.0022, rotangle=65
+eur_legend_position: bottomright
+
+eur-fin_zoom_threshold: PC1 > -0.001
+eur-fin_draw_ellipse: centerx=0.0019, centery=-0.0015, firstdiameter=0.0105, seconddiameter=0.0028, rotangle=59
+eur-fin_legend_position: bottomright

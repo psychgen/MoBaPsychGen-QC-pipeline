@@ -1,0 +1,3 @@
+eur_zoom_threshold: PC1 < 0.008
+eur_draw_threshold: PC3 < 0.008
+eur_legend_position: topright

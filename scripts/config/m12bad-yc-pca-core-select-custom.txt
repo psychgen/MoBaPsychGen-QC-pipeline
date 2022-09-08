@@ -1,0 +1,12 @@
+#eur_zoom_threshold: PC1 < -0.009
+#eur_draw_threshold: PC1 < -0.013 & PC2 > 0.004
+#eur_legend_position: bottomleft
+
+asian_zoom_threshold: PC1 < 0.03 & PC2 < -0.035
+asian_draw_threshold: PC1 > 0.0188 & PC2 < -0.0458
+asian_legend_position: bottomleft
+
+afr_zoom_threshold: PC1 > 0.005 & PC2 > 0.005
+afr_draw_threshold: PC1 > 0.0255 & PC2 > 0.0195
+afr_legend_position: bottomright
+
