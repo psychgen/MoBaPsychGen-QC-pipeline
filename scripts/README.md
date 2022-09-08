@@ -13,6 +13,12 @@
 * [merge-relatedness-rt.R](#merge-relatedness-rtr)
 * [create-relplot.sh](#create-relplotsh)
 * [select-subsamples-on-pca-without1kg.R](#select-subsamples-on-pca-without1kg)
+* [plot-sex.R](#plot-sex)
+* [plot-kinship-histogram.R](#plot-kinship-histogram)
+* [cryptic-plot.R](#cryptic-plot)
+* [plot-batch-PCs.R](#plot-batch-PCs)
+* [anova-for-PC-vs-plates.R](#anova-for-PC-vs-plates)
+* [plot-PC-by-plate.R](#plot-PC-by-plate)
 
 ## Summary of scripts
 
