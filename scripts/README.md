@@ -256,4 +256,4 @@ draw thresholds.
 **Arguments** 
 * `pcadata` - file path to the pca data
 * `outprefix` - prefix of the output plots
-* `customfile` - file customized with thresholds for the plots
+* `customfile` - custom file with single line containing the filtering thresholds (e.g., PC1 > -0.02 & PC1 < 0 & PC2 > -0.005 & PC2 < 0.01)
