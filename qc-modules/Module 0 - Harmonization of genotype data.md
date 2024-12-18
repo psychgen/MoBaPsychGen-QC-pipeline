@@ -92,26 +92,26 @@ When available, a list of known badly performing SNPs (black-listed SNPs) will b
 
 For the OmniExpress and Global Screening Array batches: update the chromosomal positions (to match the build GRCh37/hg19) where needed (this will be needed for the NORMENT batches received from 2016 onwards and the ADHD2 batch - please see the initial table to confirm if a batch needs to be converted).
 
-  1. Copy the liftover executable (&quot;software&quot; folder in DATA/DURABLE) and file to update the chromosomal positions (name: hg38ToHg19.over.chain.gz, &quot;software&quot; folder in DATA/DURABLE) to your working folder.
-  2. Create the liftover input file using the $GITHUB/lib/create-liftover-input.R script ([https://github.com/norment/moba\_qc\_imputation/tree/master/lib#create-liftover-inputr](https://github.com/norment/moba_qc_imputation/tree/master/lib#create-liftover-inputr)).
+  5.1. Copy the liftover executable (&quot;software&quot; folder in DATA/DURABLE) and file to update the chromosomal positions (name: hg38ToHg19.over.chain.gz, &quot;software&quot; folder in DATA/DURABLE) to your working folder.
+  5.2. Create the liftover input file using the $GITHUB/lib/create-liftover-input.R script ([https://github.com/norment/moba\_qc\_imputation/tree/master/lib#create-liftover-inputr](https://github.com/norment/moba_qc_imputation/tree/master/lib#create-liftover-inputr)).
  Usage: Rscript $GITHUB/lib/create-liftover-input.R dataprefix outprefix
 
-      1. For OmniExpress batches use the dataprefix: original
-      2. For Global Screening Array batches use the dataprefix: original-initials-rsids
-      3. Use the outprefix: original-initials-liftover\_input
-  3. Run liftover:
+      5.2.1. For OmniExpress batches use the dataprefix: original
+      5.2.2. For Global Screening Array batches use the dataprefix: original-initials-rsids
+      5.2.3. Use the outprefix: original-initials-liftover\_input
+  5.3. Run liftover:
  ./liftOver original-initials-liftover\_input.bed hg38ToHg19.over.chain.gz original-initials-liftover\_output.bed original-initials-liftover\_unlifted.bed
-  4. Create PLINK update map file:
+  5.4. Create PLINK update map file:
  awk &#39;{print $4, $2}&#39; original-initials-liftover\_output.bed \&gt; original-initials-liftover-update-map.txt
-  5. Create list of unlifted SNPs:
+  5.5. Create list of unlifted SNPs:
  awk &#39;{print $4}&#39; original-initials-liftover\_unlifted.bed \&gt; original-initials-liftover\_unlifted.snps
-  6. Use PLINK to update the chromosomal positions and exclude SNPs whose chromosomal positions were not able to be updated.
-    1. For OmniExpress batches:
+  5.6. Use PLINK to update the chromosomal positions and exclude SNPs whose chromosomal positions were not able to be updated.
+    5.6.1. For OmniExpress batches:
  plink --bfile original --update-map original-initials-liftover-update-map.txt --exclude original-initials-liftover\_unlifted.snps --make-bed --out original-initials-liftover
-    2. For Global Screening Array batches:
+    5.6.2. For Global Screening Array batches:
  plink --bfile original-initials-rsids --update-map original-initials-liftover-update-map.txt --exclude original-initials-liftover\_unlifted.snps --make-bed --out original-initials-liftover
-  7. Add the IDs of the removed SNPs to the original-initials-bad-snps.txt list.
-    1. For OmniExpress batches:
+  5.7. Add the IDs of the removed SNPs to the original-initials-bad-snps.txt list.
+    5.7.1. For OmniExpress batches:
  ./match.pl -f original-initials-liftover.bim -g original.bim -k 2 -l 2 -v 1 | awk &#39;$7==&quot;-&quot; {print $2,&quot;no-build-liftover&quot;}&#39; \&gt;\&gt; original-initials-bad-snps.txt
-    2. For Global Screening Array batches:
+    5.7.2. For Global Screening Array batches:
  ./match.pl -f original-initials-liftover.bim -g original-initials-rsids.bim -k 2 -l 2 -v 1 | awk &#39;$7==&quot;-&quot; {print $2,&quot;no-build-liftover&quot;}&#39; \&gt;\&gt; original-initials-bad-snps.txt
