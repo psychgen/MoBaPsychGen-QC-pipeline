@@ -1,3 +1,5 @@
+## Mitochondrial DNA haplotype estimation
+
 A pipeline for mitohondria impuation is based on the [MitoImpute](https://github.com/sjfandrews/MitoImpute/tree/master), also see the original [paper](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-021-04337-8).
 
 Environment containing impute2, R and pyhton libraries required for the pipeline can be created using `micromamba` on linux machine with internet connection:
