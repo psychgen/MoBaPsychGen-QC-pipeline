@@ -1,238 +1,264 @@
-﻿
-Module 2. QC of the core subsamples
+# Module 2. QC of ancestry populations
 
-The steps in the “QC of the core subsamples” are intended to be executed on each core subsample. As an example, the steps below use the European subsample as we will prioritize the European subsamples because they account for the majority of the MoBa cohort. Once you have finished QC-ing the European subsample, please re-run all the steps on other subsamples in your batch. Please keep the file names the same, except for the population indicator. We use “eur” to indicate a European subsample, please use “afr” and “asian” as indicators of African and Asian subsamples (as seen in step 5.l of “identify core samples”). When you read “record” in the instructions below, it means to fill out the google sheet named “MoBa\_QC\_numbers” that is created to keep track of the QC numbers for the report.
-# Quality Control (QC) steps
+The steps in the “QC of ancestry populations” are intended to be executed on each ancestry population. As an example, the steps below use the European ancestry population as it is by far the largest ancestry population in MoBa.
+
+## Quality Control (QC) steps
 Load PLINK module
-
 Follow the same setup as described in module 1 step-by-step document , e.g. set **GITHUB=/cluster/projects/p697/github/norment/moba\_qc\_imputation** if you work on machine with /cluster access (e.g. p697-submit), or **GITHUB=/tsd/p697/data/durable/s3-api/github/norment/moba\_qc\_imputation** if you work on a machine without /cluster access.
 
-Unless otherwise specified, all commands are supposed to be run in your working directory (named with your initials) in DATA/DURABLE (see folder-structure-moba-2020.pdf)
+Unless otherwise specified, all commands are supposed to be run in your working directory (named with your initials) in DATA/DURABLE (see folder-structure-moba-2020.pdf). All plots produced in this module should be copied to /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder when indicated. “Record” in the instructions below refers to recording the numbers in MoBa\_QC\_numbers spreadsheet on Google drive, when indicated. Please contact Elizabeth if you have any questions about the process.
 
-All plots produced in this module should be copied to /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder when indicated. “Record” in the instructions below refers to recording the numbers in MoBa\_QC\_numbers spreadsheet on Google drive, when indicated. Please contact Elizabeth if you have any doubts/questions about the process.
 # FIRST ROUND
-1. ## Basic QC
-   1. ### MAF
-      1. Run the following command to remove variants with MAF <0.5%:
-         plink --bfile original-initials-eur --maf 0.005 --make-bed --out original-initials-eur-common
-      1. Please record the number of SNPs removed in this step.
-      1. Make a list of IDs of rare SNPs removed:
-         ./match.pl -f original-initials-eur-common.bim -g original-initials-eur.bim -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $2,”rare, round 1”}’ > original-initials-eur-bad-snps.txt
-   1. ### Call rates
-      1. Histograms of missing rates
-         1. Run the following command to identify the missing rates for variants and for individuals.
-            plink --bfile original-initials-eur-common --missing --out original-initials-eur-missing
-            This command will generate two files: one with extension of “.imiss” and another with extension of “.lmiss”. The “.imiss” file contains the missing rates per individual and the “.lmiss” file contains missing rates per SNP.
-         1. Plot the missing rates in R
-            Use the script named “$GITHUB/lib/plot-missingness-histogram.R” (see the $GITHUB/lib/README file for more information about the script functionality and it’s input and output arguments). Run the script according to its manual.
-            The script will create three plots: one for individuals’ missingness (original-initials-eur-missing-rate-indiv.png) and two for the SNPs’ missingness (original-initials-eur-missing-rate-snps-all.png and original-initials-eur-missing-rate-snps-zoom.png).
-            1. Example of how to run the plot-missingness-histogram.R script in your working directory (in terminal):
-               Rscript $GITHUB/lib/plot-missingness-histogram.R dataprefix “tag”
-               Where: dataprefix is the prefix of your .imiss and .lmiss files created in this step (specific to your batch and core subsample, i.e. original-initials-eur-missing).
-               tag (make sure it is written in quotation marks) consists of three arguments, first the name of your batch, second the name of the core subpopulation, and third the QC round.
-         1. Please record the names of the plots you’ve created in MoBa\_QC\_numbers spreadsheet on google drive and copy the files with plots to the export folder for module II.
-      1. Remove SNPs with call rate below 95%
-         plink --bfile original-initials-eur-common --geno 0.05 --make-bed --out original-initials-eur-95
-      1. Please record the number of SNPs that failed this filter.
 
-Add reason the SNPs were removed
-      1. Make a file with IDs of SNPs that were removed in this step using the following command:
-         cut -f2 original-initials-eur-common.bim original-initials-eur-95.bim | sort | uniq -c | awk '{if($1==1) print($2)}' > original-initials-eur-95-failed-snps.txt
-      1. Remove SNPs with call rate below 98%:
-         plink --bfile original-initials-eur-95 --geno 0.02 --make-bed --out original-initials-eur-98
-      1. Remove individuals and then SNPs with call rate below 98%:
-         plink --bfile original-initials-eur-98 --mind 0.02 --geno 0.02 --make-bed --out original-initials-eur-call-rates
-      1. Please record the number of SNPs that fail the geno filter and the number of individuals who fail the mind filter.
-      1. Create a file with the IDs of SNPs that failed this filter using the following command:
-         cut -f2 original-initials-eur-95.bim original-initials-eur-call-rates.bim | sort | uniq -c | awk '{if($1==1) print($2)}' > original-initials-eur-basic-qc-snp-call-rate-fail.txt
-      1. Create a file with the IDs of individuals that failed this filter using the following command:
-         The list of individuals that failed this filter is stored in original-initials-eur-call-rates.irem created by PLINK.
-   1. ### HWE
-      1. HWE test, run the following command to remove SNPs not in HWE (with p<1.00E-06):
-         plink --bfile original-initials-eur-call-rates --hwe 0.000001 --make-bed --out original-initials-eur-basic-qc
-      1. Please record the number of SNPs that fail the HWE filter.
+## 1. Basic QC
 
-Add these individuals and the reason list of individuals already removed
-      1. Create a file with the IDs of SNPs that failed.
+   1.1 MAF
+   
+      1.1.1. Run the following command to remove variants with MAF <0.5%: plink --bfile original-initials-eur --maf 0.005 --make-bed --out original-initials-eur-common
+      1.1.2. Please record the number of SNPs removed in this step.
+      1.1.3 Make a list of IDs of rare SNPs removed: ./match.pl -f original-initials-eur-common.bim -g original-initials-eur.bim -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $2,”rare, round 1”}’ > original-initials-eur-bad-snps.txt
+
+   1.2 Call rates
+   
+      1.2.1. Histograms of missing rates
+            
+         1.2.1.1. Run the following command to identify the missing rates for variants and for individuals: plink --bfile original-initials-eur-common --missing --out original-initials-eur-missing
+         This command will generate two files: one with extension of “.imiss” and another with extension of “.lmiss”. The “.imiss” file contains the missing rates per individual and the “.lmiss” file contains missing rates per SNP.
+         
+         1.2.1.2. Plot the missing rates in R.
+         Use the script named “$GITHUB/lib/plot-missingness-histogram.R” (see the $GITHUB/lib/README file for more information about the script functionality and it’s input and output arguments). Run the script according to its manual.
+         The script will create three plots: one for individuals’ missingness (original-initials-eur-missing-rate-indiv.png) and two for the SNPs’ missingness (original-initials-eur-missing-rate-snps-all.png and original-initials-eur-missing-rate-snps-zoom.png).
+               1.2.1.2.1 Example of how to run the plot-missingness-histogram.R script in your working directory (in terminal): Rscript $GITHUB/lib/plot-missingness-histogram.R dataprefix “tag”. Where: dataprefix is the prefix of your .imiss and .lmiss files created in this step (specific to your batch and core subsample, i.e. original-initials-eur-missing), tag (make sure it is written in quotation marks) consists of three arguments, first the name of your batch, second the name of the core subpopulation, and third the QC round.
+      
+         1.2.1.3 Please record the names of the plots you’ve created in MoBa\_QC\_numbers spreadsheet on google drive and copy the files with plots to the export folder for module II.
+      
+      1.2.2. Remove SNPs with call rate below 95%: plink --bfile original-initials-eur-common --geno 0.05 --make-bed --out original-initials-eur-95
+      
+      1.2.3. Please record the number of SNPs that failed this filter.
+
+      1.2.4. Make a file IDs of SNPs that were removed in this step using the following command: cut -f2 original-initials-eur-common.bim original-initials-eur-95.bim | sort | uniq -c | awk '{if($1==1) print($2)}' > original-initials-eur-95-failed-snps.txt
+
+      1.2.5 Remove SNPs with call rate below 98%: plink --bfile original-initials-eur-95 --geno 0.02 --make-bed --out original-initials-eur-98
+      
+      1.2.6. Remove individuals and then SNPs with call rate below 98%: plink --bfile original-initials-eur-98 --mind 0.02 --geno 0.02 --make-bed --out original-initials-eur-call-rates
+      
+      1.2.7 Please record the number of SNPs that fail the geno filter and the number of individuals who fail the mind filter.
+      
+      1.2.8 Create a file with the IDs of SNPs that failed this filter using the following command: cut -f2 original-initials-eur-95.bim original-initials-eur-call-rates.bim | sort | uniq -c | awk '{if($1==1) print($2)}' > original-initials-eur-basic-qc-snp-call-rate-fail.txt
+      
+      1.2.9 The list of individuals that failed this filter is stored in original-initials-eur-call-rates.irem created by PLINK.
+      
+   1.3 Hardy-Weinberg equilibrium (HWE)
+      
+      1.3.1. HWE test, run the following command to remove SNPs not in HWE (with p<1.00E-06): plink --bfile original-initials-eur-call-rates --hwe 0.000001 --make-bed --out original-initials-eur-basic-qc
+      
+      1.3.2. Please record the number of SNPs that fail the HWE filter.
+      
+      1.3.3. Create a file with the IDs of SNPs that failed.
          cut -f2 original-initials-eur-call-rates.bim original-initials-eur-basic-qc.bim | sort | uniq -c | awk '{if($1==1) print($2)}' > original-initials-eur-basic-qc-snp-hwe-fail.txt
-   1. ### Heterozygosity
-update name so not overwriting maf filter log file
-      1. Estimate heterozygosity and missingness with the following PLINK command
-         plink --bfile original-initials-eur-basic-qc --chr 1-22 --het --missing --out original-initials-eur-common
-      1. Plot the data and make a list of outliers based on being outside the +/- 3 standard deviations of the sample mean.
-         1. Use the script “$GITHUB/lib/plot-heterozygosity-common.R” to run in R. (see the $GITHUB/lib/README.md file for more information about the script functionality and it’s input and output arguments).
-         1. Usage: Rscript $GITHUB/lib/plot-heterozygosity-common.R dataprefix “tag”
-            Where: dataprefix - prefix of the outputs from PLINK command to estimate heterozygosity and missingness
-            “tag” - “tag population, round 2”, please remember to use the tag from “plot-PLINK” file in “resources” folder.
-      1. Please record the number of individuals who are the outliers, you can find the number by using the following command:
-         tail -n +2 original-initials-eur-common-het-fail.txt | wc -l
-      1. Remove heterozygosity outliers:
-         plink --bfile original-initials-eur-basic-qc --remove original-initials-eur-common-het-fail.txt --make-bed --out original-initials-eur-het
 
-Add these individuals and the reason list of individuals already removed
-      1. Add the list of individuals to those who have already been removed.
-1. ## Sex check
-This will fail for batches (e.g.  rotterdam1) where XY already exists (fails even with 'no-fail' modifier).
-   1. Make sure the X chromosome pseudo-autosomal region is coded as a separate XY chromosome using the following command:
-      plink --bfile original-initials-eur-het --split-x b37 --make-bed --out original-initials-eur-pseudo
-   1. Run sexcheck in PLINK.
-      1. If the pseudo-autosomal region was already coded use the following command:
-         plink --bfile original-initials-eur-het --check-sex --out original-initials-eur-sexcheck-1
-      1. If the pseudo-autosomal region was not coded use the following command:
-         plink --bfile original-initials-eur-pseudo --check-sex --out original-initials-eur-sexcheck-1
-   1. Make a plot to get an overview of the reported sex in the batch
-      1. Get missingness for chromosome X
-         1. If the pseudo-autosomal region was already coded use the following command:
-            plink --bfile original-initials-eur-het --chr 23 --missing --out original-initials-eur-chr23-miss
-         1. If the pseudo-autosomal region was not coded use the following command:
-            plink --bfile original-initials-eur-pseudo --chr 23 --missing --out original-initials-eur-chr23-miss
-      1. Add chromosome X missingness to the sex check file
-         ./match.pl -f original-initials-eur-chr23-miss.imiss -g original-initials-eur-sexcheck-1.sexcheck -k 2 -l 2 -v 6 > original-initials-eur-1-chr23-plot.txt
-      1. Run the $GITHUB/lib/plot-sex.R script. Please see README-for-plot-sex for usage information. Usage: Rscript $GITHUB/lib/plot-sex.R input tag legendpos output
-         Where: input - the name of the file containing F and  missingness data for X chromosome
-         tag - part of the title to be given to the plot, it should reflect the tag of the batch from plot-PLINK file and the subpopulation/round of the QC
-         legendpos - the position of legend (use: topleft, topright, bottomleft, bottomright)
-         output - the name of the output file to be created
-         1. Please specify the:
-            input - original-initials-eur-1-chr23-plot.txt
-            title - “tag.from.plot-PLINK.file EUR, round 1”
-            output - original-initials-eur-1-sex-plot.png
-            Example: Rscript $GITHUB/lib/plot-sex.R original-initials-eur-1-chr23-plot.txt “tag EUR, round 1” topleft original-initials-eur-1-sex-plot.png
-      1. Please post the plot on slack and, if everything is OK, copy it to /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
-   1. Identify individuals with problematic sex assignment.
-      awk '$3!=0 && $5=="PROBLEM" {print $0}' original-initials-eur-sexcheck-1.sexcheck > original-initials-eur-bad-sex-1.txt
-   1. Record the number of individuals with problematic sex assignment.
-      wc -l original-initials-eur-bad-sex-1.txt
-   1. Identify individuals with erroneous sex assignment
-      awk '$3==1 && $6<0.5 || $3==2 && $6>0.5 {print $0}' original-initials-eur-bad-sex-1.txt > original-initials-eur-erroneous-sex-1.txt
-   1. Record the number of individuals with erroneous sex assignment.
-      wc -l original-initials-eur-erroneous-sex-1.txt
-   1. Remove individuals with erroneous sex assignment:
-      plink --bfile original-initials-eur-het --remove original-initials-eur-erroneous-sex-1.txt --make-bed --out original-initials-eur-sex-1
+   1.4 Heterozygosity
 
-Add these individuals and the reason list of individuals already removed
-   1. Add the IDs of individuals removed to the list of those who have already been removed.
-1. ## Duplicates
+      1.4.1. Estimate heterozygosity and missingness with the following PLINK command: plink --bfile original-initials-eur-basic-qc --chr 1-22 --het --missing --out original-initials-eur-common
+      
+      1.4.2 Plot the data and make a list of outliers based on being outside the +/- 3 standard deviations of the sample mean.
+         
+         1.4.2.1 Use the script “$GITHUB/lib/plot-heterozygosity-common.R” to run in R. (see the $GITHUB/lib/README.md file for more information about the script functionality and it’s input and output arguments). Usage: Rscript $GITHUB/lib/plot-heterozygosity-common.R dataprefix “tag”. Where: dataprefix - prefix of the outputs from PLINK command to estimate heterozygosity and missingness, “tag” - “tag population, round 2”, please remember to use the tag from “plot-PLINK” file in “resources” folder.
+      
+      1.4.3. Please record the number of individuals who are the outliers, you can find the number by using the following command: tail -n +2 original-initials-eur-common-het-fail.txt | wc -l
+      
+      1.4.4 Remove heterozygosity outliers: plink --bfile original-initials-eur-basic-qc --remove original-initials-eur-common-het-fail.txt --make-bed --out original-initials-eur-het
+      
+      1.4.5 Add the list of individuals to those who have already been removed.
+
+## 2. Sex check
+
+   2.1. Make sure the X chromosome pseudo-autosomal region is coded as a separate XY chromosome using the following command: plink --bfile original-initials-eur-het --split-x b37 --make-bed --out original-initials-eur-pseudo. This will fail for batches (e.g.  rotterdam1) where XY already exists (fails even with 'no-fail' modifier).
+
+   2.2. Run sexcheck in PLINK.
+      
+      2.2.1. If the pseudo-autosomal region was already coded use the following command: plink --bfile original-initials-eur-het --check-sex --out original-initials-eur-sexcheck-1
+      
+      2.2.2. If the pseudo-autosomal region was not coded use the following command: plink --bfile original-initials-eur-pseudo --check-sex --out original-initials-eur-sexcheck-1
+
+   2.3. Make a plot to get an overview of the reported sex in the batch
+   
+      2.3.1. Get missingness for chromosome X
+         
+         2.3.1.1. If the pseudo-autosomal region was already coded use the following command: plink --bfile original-initials-eur-het --chr 23 --missing --out original-initials-eur-chr23-miss
+         
+         2.3.1.2. If the pseudo-autosomal region was not coded use the following command: plink --bfile original-initials-eur-pseudo --chr 23 --missing --out original-initials-eur-chr23-miss
+
+      2.3.2. Add chromosome X missingness to the sex check file: ./match.pl -f original-initials-eur-chr23-miss.imiss -g original-initials-eur-sexcheck-1.sexcheck -k 2 -l 2 -v 6 > original-initials-eur-1-chr23-plot.txt
+      
+      2.3.3. Run the $GITHUB/lib/plot-sex.R script. Please see README-for-plot-sex for usage information. Usage: Rscript $GITHUB/lib/plot-sex.R input tag legendpos output.  Where: input - the name of the file containing F and  missingness data for X chromosome, tag - part of the title to be given to the plot, it should reflect the tag of the batch from plot-PLINK file and the subpopulation/round of the QC, legendpos - the position of legend (use: topleft, topright, bottomleft, bottomright), output - the name of the output file to be created. 
+         
+         2.3.3.1. Please specify the: input - original-initials-eur-1-chr23-plot.txt, title - “tag.from.plot-PLINK.file EUR, round 1”, output - original-initials-eur-1-sex-plot.png. Example: Rscript $GITHUB/lib/plot-sex.R original-initials-eur-1-chr23-plot.txt “tag EUR, round 1” topleft original-initials-eur-1-sex-plot.png
+         
+      2.3.4. Please post the plot on slack and, if everything is OK, copy it to /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
+   
+   2.4. Identify individuals with problematic sex assignment: awk '$3!=0 && $5=="PROBLEM" {print $0}' original-initials-eur-sexcheck-1.sexcheck > original-initials-eur-bad-sex-1.txt
+
+   2.5. Record the number of individuals with problematic sex assignment: wc -l original-initials-eur-bad-sex-1.txt
+   
+   2.6. Identify individuals with erroneous sex assignment: awk '$3==1 && $6<0.5 || $3==2 && $6>0.5 {print $0}' original-initials-eur-bad-sex-1.txt > original-initials-eur-erroneous-sex-1.txt
+   
+   2.7. Record the number of individuals with erroneous sex assignment: wc -l original-initials-eur-erroneous-sex-1.txt
+   2.8. Remove individuals with erroneous sex assignment: plink --bfile original-initials-eur-het --remove original-initials-eur-erroneous-sex-1.txt --make-bed --out original-initials-eur-sex-1
+
+## 3. Duplicates
+
 QC of duplicates will only be done in the first round of this module for batches that have within batch duplicates. If your batch does not have duplicates proceed to step 4.To determine if your batch has within-batch duplicates look refer to the file /tsd/p697/data/durable/projects/moba\_qc\_imputation/resources/duplicates.xlsx.
-1. ### Identify real duplicates
-   1. Prune the data using the following command:
+
+   3.1. Identify real duplicates
+   
+      3.1.1. Prune the data using the following command:
       plink --bfile original-initials-eur-sex-1 --indep-pairwise 3000 1500 0.1 --out original-initials-eur-prune
-   1. Copy the relevant list of duplicates (the lists are by genotype array: hce\_duplicates.txt, omni\_duplicates.txt, and gsa\_duplicates.txt) from the “resources folder” on DATA/DURABLE to your working directory.
-   1. Run IBD calculation in PLINK for expected duplicates (example below is for batches genotyped using the hce array).
-      plink --bfile original-initials-eur-sex-1 --extract original-initials-eur-prune.prune.in --keep hce\_duplicates.txt --genome --out original-initials-eur-ibd
-   1. Examine the log file. If no individuals remain after “--keep”, move on to step 4.
-   1. Run the following command to keep only real duplicates (i.e., those that share at least 98% IBD):
-      awk '$10>=0.98 {print $0}' original-initials-eur-ibd.genome > original-initials-eur-good-dup.txt
-   1. For the ‘real’ duplicate pairs split the data into two sets using the following commands:
+      
+      3.1.2. Copy the relevant list of duplicates (the lists are by genotype array: hce\_duplicates.txt, omni\_duplicates.txt, and gsa\_duplicates.txt) from the “resources folder” on DATA/DURABLE to your working directory.
+   
+      3.1.3. Run IBD calculation in PLINK for expected duplicates (example below is for batches genotyped using the hce array): plink --bfile original-initials-eur-sex-1 --extract original-initials-eur-prune.prune.in --keep hce\_duplicates.txt --genome --out original-initials-eur-ibd
+      
+      3.1.4. Examine the log file. If no individuals remain after “--keep”, move on to step 4.
+      
+      3.1.5. Run the following command to keep only real duplicates (i.e., those that share at least 98% IBD): awk '$10>=0.98 {print $0}' original-initials-eur-ibd.genome > original-initials-eur-good-dup.txt
+   
+      3.1.6. For the ‘real’ duplicate pairs split the data into two sets using the following commands:
       awk ‘{print $1,$2}’ original-initials-eur-good-dup.txt | sort | uniq > original-initials-eur-good-dup-1.txt
       awk ‘{print $3,$4}’ original-initials-eur-good-dup.txt | sort | uniq > original-initials-eur-good-dup-2.txt
-   1. For known triplicates identify the individual (IID) that is in both the original-initials-eur-good-dup-1.txt and original-initials-eur-good-dup-2.txt file. The hce\_duplicates\_wide.txt, omni\_duplicates\_wide.txt, or gsa\_duplicates\_wide.txt file in the resources folder should be used to help with this. Each row of the duplicates\_wide files contains a duplicate/triplicates pair.
-      1. Create a file named original-initials-eur-good-dup-3.txt that contains the individual in both the original-initials-eur-good-dup-1.txt and original-initials-eur-good-dup-2.txt files.
+      
+      3.1.7. For known triplicates identify the individual (IID) that is in both the original-initials-eur-good-dup-1.txt and original-initials-eur-good-dup-2.txt file. The hce\_duplicates\_wide.txt, omni\_duplicates\_wide.txt, or gsa\_duplicates\_wide.txt file in the resources folder should be used to help with this. Each row of the duplicates\_wide files contains a duplicate/triplicates pair.
+      
+         3.1.7.1. Create a file named original-initials-eur-good-dup-3.txt that contains the individual in both the original-initials-eur-good-dup-1.txt and original-initials-eur-good-dup-2.txt files.
          awk ‘NR==FNR{A[$2];next}$2 in A’ original-initials-eur-good-dup-1.txt original-initials-eur-good-dup-2.txt > original-initials-eur-good-dup-3.txt  
-      1. Remove the individual from both the original-initials-eur-good-dup-1.txt and original-initials-eur-good-dup-2.txt files.
+      
+         3.1.7.2. Remove the individual from both the original-initials-eur-good-dup-1.txt and original-initials-eur-good-dup-2.txt files.
          grep -vwE -f original-initials-eur-good-dup-3.txt original-initials-eur-good-dup-1.txt > original-initials-eur-good-dup-1.txt\_temp
          grep -vwE -f original-initials-eur-good-dup-3.txt original-initials-eur-good-dup-2.txt > original-initials-eur-good-dup-2.txt\_temp
          mv original-initials-eur-good-dup-1.txt\_temp original-initials-eur-good-dup-1.txt
          mv original-initials-eur-good-dup-2.txt\_temp  original-initials-eur-good-dup-2.txt
-1. ### SNP concordance analysis
-   1. Create PLINK bfiles for the sets of real duplicates/triplicates using the following commands: 
+
+   3.2. SNP concordance analysis
+   
+      3.2.1. Create PLINK bfiles for the sets of real duplicates/triplicates using the following commands: 
       plink --bfile original-initials-eur-sex-1 --keep original-initials-eur-good-dup-1.txt --make-bed --out original-initials-eur-good-dup-1
       plink --bfile original-initials-eur-sex-1 --keep original-initials-eur-good-dup-2.txt --make-bed --out original-initials-eur-good-dup-2
       plink --bfile original-initials-eur-sex-1 --keep original-initials-eur-good-dup-3.txt --make-bed --out original-initials-eur-good-dup-3
-      1. Check that the number of individuals in original-initials-eur-good-dup-1.fam and original-initials-eur-good-dup-2.fam is the same. The results of the following commands should be the same:
+      
+         3.2.1.1. Check that the number of individuals in original-initials-eur-good-dup-1.fam and original-initials-eur-good-dup-2.fam is the same. The results of the following commands should be the same:
          wc -l original-initials-eur-good-dup-1.fam
          wc -l original-initials-eur-good-dup-2.fam
          wc -l original-initials-eur-good-dup-3.fam
-   1. Rename the duplicates in one set of PLINK bfiles using the following commands:
+   
+      3.2.2. Rename the duplicates in one set of PLINK bfiles using the following commands:
       awk ‘{print $3, $4, $1, $2}’ original-initials-eur-good-dup.txt > original-initials-eur-good-dup-id.txt
       plink --bfile original-initials-eur-good-dup-2 --update-ids original-initials-eur-good-dup-id.txt --make-bed --out original-initials-eur-good-dup-id
-   1. Rename the triplicates.
-      1. Use the hce\_duplicates\_v12.txt file in the resources folder to make original-initials-eur-good-trip1-id.txt and original-initials-eur-good-trip2-id.txt files with the first two columns containing the FID and IID of the individual(s) in the original-initials-eur-good-dup-3.txt file and the last two columns containing the FID and IID of the triplicate individual(s) in the original-initials-eur-good-trip1-id.txt and original-initials-eur-good-trip2-id.txt files, respectively.
+   
+      3.2.3. Rename the triplicates.
+         3.2.3.1. Use the hce\_duplicates\_v12.txt file in the resources folder to make original-initials-eur-good-trip1-id.txt and original-initials-eur-good-trip2-id.txt files with the first two columns containing the FID and IID of the individual(s) in the original-initials-eur-good-dup-3.txt file and the last two columns containing the FID and IID of the triplicate individual(s) in the original-initials-eur-good-trip1-id.txt and original-initials-eur-good-trip2-id.txt files, respectively.
          grep -wE -f hce\_triplicates\_v12.txt original-initials-eur-good-dup-1.txt > original-initials-eur-good-trip1-id.txt\_temp
          grep -wE -f hce\_triplicates\_v12.txt original-initials-eur-good-dup-2.txt > original-initials-eur-good-trip2-id.txt\_temp
          paste original-initials-eur-good-dup-3.txt original-initials-eur-good-trip1-id.txt\_temp > original-initials-eur-good-trip1-id.txt
          paste original-initials-eur-good-dup-3.txt original-initials-eur-good-trip2-id.txt\_temp > original-initials-eur-good-trip2-id.txt
          rm original-initials-eur-good-trip1-id.txt\_temp
          rm original-initials-eur-good-trip2-id.txt\_temp
-      1. Run the plink commands to rename the triplicates.
+      
+         3.2.3.2. Run the plink commands to rename the triplicates.
          plink --bfile original-initials-eur-good-dup-3 --update-ids original-initials-eur-good-trip1-id.txt --make-bed --out original-initials-eur-good-trip1-id
          plink --bfile original-initials-eur-good-dup-3 --update-ids original-initials-eur-good-trip2-id.txt --make-bed --out original-initials-eur-good-trip2-id
-   1. Identify SNPs that are discordant in the real duplicates using the following command:
-      plink --bfile original-initials-eur-good-dup-1 --bmerge original-initials-eur-good-dup-id --merge-mode 7 --out original-initials-eur-dup-check
-   1. Identify SNPs that are discordant in the real triplicates using the following commands:
+   
+      3.2.4. Identify SNPs that are discordant in the real duplicates using the following command: plink --bfile original-initials-eur-good-dup-1 --bmerge original-initials-eur-good-dup-id --merge-mode 7 --out original-initials-eur-dup-check
+
+      3.2.5. Identify SNPs that are discordant in the real triplicates using the following commands:
       plink --bfile original-initials-eur-good-dup-1 --bmerge original-initials-eur-good-trip1-id --merge-mode 7 --out original-initials-eur-trip1-check
       plink --bfile original-initials-eur-good-dup-2 --bmerge original-initials-eur-good-trip2-id --merge-mode 7 --out original-initials-eur-trip2-check
-   1. Create a list of discordant SNPs
-      1. If you only had duplicates use the following command:
-         awk '{print $1}' original-initials-eur-dup-check.diff | sort -u > original-initials-eur-dup-snps-to-remove.txt
-      1. If you had triplicates use the following commands:
+   
+      3.2.6. Create a list of discordant SNPs
+         
+         3.2.6.1. If you only had duplicates use the following command: awk '{print $1}' original-initials-eur-dup-check.diff | sort -u > original-initials-eur-dup-snps-to-remove.txt
+      
+         3.2.6.2. If you had triplicates use the following commands:
          cat original-initials-eur-dup-check.diff original-initials-eur-trip1-check.diff original-initials-eur-trip2-check.diff > original-initials-eur-trip-check.diff
          awk '{print $1}' original-initials-eur-trip-check.diff | sort -u > original-initials-eur-dup-snps-to-remove.txt
-   1. Record the number of discordant SNPs to be removed
-      ` `wc -l original-initials-eur-dup-snps-to-remove.txt
-   1. Remove the discordant SNPs using the following command:
-      plink --bfile original-initials-eur-sex-1 --exclude original-initials-eur-dup-snps-to-remove.txt --make-bed --out original-initials-eur-dup-clean
+   
+      3.2.7. Record the number of discordant SNPs to be removed: wc -l original-initials-eur-dup-snps-to-remove.txt
+      
+      3.2.8. Remove the discordant SNPs using the following command: plink --bfile original-initials-eur-sex-1 --exclude original-initials-eur-dup-snps-to-remove.txt --make-bed --out original-initials-eur-dup-clean
 
-Add these individuals and the reason list of individuals already removed
-   1. Create a file with the IDs of SNPs that were removed.
-1. ### Remove one individual from each duplicate pair
-   1. Get the call rates of individuals using the following command:
-      plink --bfile original-initials-eur-dup-clean --missing --out original-initials-eur-dup-clean-miss
-   1. Copy the relevant duplicates file in wide format, where one row represents one duplicate/triplicate pair/trio, to your working directory (the lists are by genotype array: hce\_duplicates\_wide\_no\_r.txt, omni\_duplicates\_wide.txt, and gsa\_duplicates\_wide.txt) from the “resources folder” on DATA/DURABLE to your working directory.
-   1. Add the missingness rates to the duplicates file in wide format using the following commands (hce\_duplicates\_wide\_no\_r.txt is used in the below example):
+   3.3. Remove one individual from each duplicate pair
+   
+      3.3.1. Get the call rates of individuals using the following command: plink --bfile original-initials-eur-dup-clean --missing --out original-initials-eur-dup-clean-miss
+      
+      3.3.2. Copy the relevant duplicates file in wide format, where one row represents one duplicate/triplicate pair/trio, to your working directory (the lists are by genotype array: hce\_duplicates\_wide\_no\_r.txt, omni\_duplicates\_wide.txt, and gsa\_duplicates\_wide.txt) from the “resources folder” on DATA/DURABLE to your working directory.
+   
+      3.3.3. Add the missingness rates to the duplicates file in wide format using the following commands (hce\_duplicates\_wide\_no\_r.txt is used in the below example):
       ./match.pl -f original-initials-eur-dup-clean-miss.imiss -g hce\_duplicates\_wide\_no\_r.txt -k 2 -l 1 -v 6 > original-initials-eur-dup-miss1
       ./match.pl -f original-initials-eur-dup-clean-miss.imiss -g original-initials-eur-dup-miss1 -k 2 -l 2 -v 6 > original-initials-eur-dup-miss2
       ./match.pl -f original-initials-eur-dup-clean-miss.imiss -g original-initials-eur-dup-miss2 -k 2 -l 3 -v 6 > original-initials-eur-dup-miss3
       rm original-initials-eur-dup-miss1
       rm original-initials-eur-dup-miss2
-   1. Identify duplicates/triplicates with lower call rate than their pair(s) using the following commands:
+   
+      3.3.4. Identify duplicates/triplicates with lower call rate than their pair(s) using the following commands:
       awk '$6=="-" && $4!="-" && $5!="-" {print $0}' original-initials-eur-dup-miss3 | awk '{if($4>$5) print $1; else print $2}' > original-initials-eur-max
       awk '$5=="-" && $4!="-" && $6!="-" {print $0}' original-initials-eur-dup-miss3 | awk '{if($4>$6) print $1; else print $3}' >> original-initials-eur-max
       awk '$4=="-" && $5!="-" && $6!="-" {print $0}' original-initials-eur-dup-miss3 | awk '{if($5>$6) print $2; else print $3}' >> original-initials-eur-max
       awk '$4!="-" && $5!="-" && $6!="-" {print $0}' original-initials-eur-dup-miss3 | awk '{if($4<=$5 && $4<=$6) print $2"\n"$3; else if($5<=$4 && $5<=$6) print $1"\n"$3; else print $1"\n"$2}' >> original-initials-eur-max
-   1. Create a list of individuals to remove 
-      ./match.pl -f original-initials-eur-max -g hce\_duplicates.txt -k 1 -l 2 -v 1 | awk '$3!="-" {print $1,$2}' > original-initials-eur-multi-bad
-   1. Remove the individuals from the duplicate/triplicate pairs to remove using the following command:
-      plink --bfile original-initials-eur-dup-clean --remove original-initials-eur-multi-bad --make-bed --out original-initials-eur-multi-clean
-   1. Record how many individuals were removed.
+      
+      3.3.5. Create a list of individuals to remove: ./match.pl -f original-initials-eur-max -g hce\_duplicates.txt -k 1 -l 2 -v 1 | awk '$3!="-" {print $1,$2}' > original-initials-eur-multi-bad
+   
+      3.3.6. Remove the individuals from the duplicate/triplicate pairs to remove using the following command: plink --bfile original-initials-eur-dup-clean --remove original-initials-eur-multi-bad --make-bed --out original-initials-eur-multi-clean
 
-Add command
-   1. Add the IDs of individuals removed to the list of previously removed individuals:
-1. ## Unlinkable individuals
-   1. Copy the file named “unlinkable\_IDs.txt” from the resources folder to your working directory. This file contains IDs of individuals for whom linkage information was not obtained from Central MoBa.
-   1. Remove the individuals without linkage information
-      1. If your batch had duplicates use the following command:
-         plink --bfile original-initials-eur-multi-clean --remove unlinkable\_IDs.txt --make-bed --out original-initials-eur-linked-only
-      1. If your batch did not have duplicates, then use the following command:
-         plink --bfile original-initials-eur-sex-1 --remove unlinkable\_IDs.txt --make-bed --out original-initials-eur-linked-only
-   1. Please record how many individuals were removed.
-1. ## Pedigree build and known relatedness
+## 4. Unlinkable individuals
+   
+   4.1. Copy the file named “unlinkable\_IDs.txt” from the resources folder to your working directory. This file contains IDs of individuals for whom linkage information was not obtained from Central MoBa.
+   
+   4.2. Remove the individuals without linkage information
+
+      4.2.1. If your batch had duplicates use the following command: plink --bfile original-initials-eur-multi-clean --remove unlinkable\_IDs.txt --make-bed --out original-initials-eur-linked-
+      4.2.2. If your batch did not have duplicates, then use the following command: plink --bfile original-initials-eur-sex-1 --remove unlinkable\_IDs.txt --make-bed --out original-initials-eur-linked-only
+
+   4.3. Please record how many individuals were removed.
+
+## 5. Pedigree build and known relatedness
+
 This can be a memory intensive step particularly if you have a large batch, therefore, it is recommended to run "king" directly on the p697-appn-norment01 machine or on Colossus. The software directory has multiple versions of "king", use the latest version: king225. NB  king225rhel6 can be used on TSD login nodes (but only if submit nodes and app node are unavailable); king225rhel6 binary will crash on p697-submit nodes and p697-appn-norment01. Finally, king225\_patch1 is a customly modified "king" program which produces a smaller output file in "king --ibs". Only individuals with kinship above 0.025 are reported.
-1. ### KING pedigree build and relatedness.
-   1. Copy the age.txt file from “resources” folder to your working directory on DATA/DURABLE.
-   1. Rename the file so it has the same prefix as the PLINK bfiles using the following command:
-      mv age.txt original-initials-eur-linked-only.cov
-   1. If you are running KING on the p697-appn-norment01 machine use the following command:
-      /cluster/projects/p697/projects/moba\_qc\_imputation/software/king225 -b original-initials-eur-linked-only.bed --related --ibs --build --degree 2 --rplot --prefix original-initials-eur-king-1 > original-initials-eur-king-1-slurm.txt
-   1. If you are running KING on Colossus:
-      1. Create a folder named with your initials on /cluster/projects/p697/projects/moba\_qc\_imputation (please see “folder-structure-moba-2020.pdf” for reference). It will be your working directory on Colossus. Please use it every time you run things on Colossus.
-      1. Copy original-initials-eur-linked-only.bed, original-initials-eur-linked-only.bim, original-initials-eur-linked-only.fam, and original-initials-eur-linked-only.cov files to your working directory on Colossus.
-      1. Once in your working directory on Colossus, define “fin” and “fout” environmental variables as shown below, adjusting the names to reflect the names of your files (e.g. “original-initials” needs to become “moba12good-ec”), and then submit the job to Colossus:
+
+   5.1. KING pedigree build and relatedness.
+      
+      5.1.1. Copy the age.txt file from “resources” folder to your working directory on DATA/DURABLE.
+      
+      5.1.2. Rename the file so it has the same prefix as the PLINK bfiles using the following command: mv age.txt original-initials-eur-linked-only.cov
+      
+      5.1.3. If you are running KING on the p697-appn-norment01 machine use the following command: /cluster/projects/p697/projects/moba\_qc\_imputation/software/king225 -b original-initials-eur-linked-only.bed --related --ibs --build --degree 2 --rplot --prefix original-initials-eur-king-1 > original-initials-eur-king-1-slurm.txt
+   
+      5.1.4. If you are running KING on Colossus:
+         
+         5.1.4.1. Create a folder named with your initials on /cluster/projects/p697/projects/moba\_qc\_imputation (please see “folder-structure-moba-2020.pdf” for reference). It will be your working directory on Colossus. Please use it every time you run things on Colossus.
+      
+         5.1.4.2. Copy original-initials-eur-linked-only.bed, original-initials-eur-linked-only.bim, original-initials-eur-linked-only.fam, and original-initials-eur-linked-only.cov files to your working directory on Colossus.
+         
+         5.1.4.3. Once in your working directory on Colossus, define “fin” and “fout” environmental variables as shown below, adjusting the names to reflect the names of your files (e.g. “original-initials” needs to become “moba12good-ec”), and then submit the job to Colossus:
          export fin=original-initials-eur-linked-only
          export fout=original-initials-eur-king-1
          sbatch $GITHUB/jobs/KING.job
-      1. When you submit the job, please note the job number. Once the job is finished, rename the slurm output file using the following command:
-         mv slurm-your.jobnumber.out original-initials-eur-king-1-slurm.txt
-      1. Move KING output files to your working directory on DATA/DURABLE and delete the input files used for this step from your working directory on Colossus. These can be achieved with the following commands:
+      
+         5.1.4.4. When you submit the job, please note the job number. Once the job is finished, rename the slurm output file using the following command: mv slurm-your.jobnumber.out original-initials-eur-king-1-slurm.txt
+         
+         5.1.4.5. Move KING output files to your working directory on DATA/DURABLE and delete the input files used for this step from your working directory on Colossus. These can be achieved with the following commands:
          rm original-initials-eur-linked-only.\*
          mv original-initials-eur-king-1\*.\* /tsd/p697/data/durable/projects/moba\_qc\_imputation/initials
-      1. Go back to your working directory on DATA/DURABLE and continue working in that directory for the rest of this step.
-   1. Please check in the slurm file that age was taken into account when running the build section of KING. Please let Elizabeth know if age was not taken into account.
-1. ### Update pedigree according to KING output:
-   1. Check that the IID, PID, and MID in the original-initials-eur-king-1updateids.txt or original-initials-eur-king-1updateparents.txt files have not been changed from SENTRIX format. If the IIDs have been changed from the SENTRIX format use the following commands to convert back to SENTRIX format. Otherwise proceed to step 5.5.
-      1. Command to convert the updateids file:
-         awk '{print $1,$2,$3,$2}' original-initials-eur-king-1updateids.txt > original-initials-eur-king-1updateids.txt-sentrix
-      1. Command to convert the updateparents file:
+         
+         5.1.4.6. Go back to your working directory on DATA/DURABLE and continue working in that directory for the rest of this step.
+   
+      5.1.5 Please check in the slurm file that age was taken into account when running the build section of KING. Please let Elizabeth know if age was not taken into account.
+
+   5.2. Update pedigree according to KING output:
+      
+      5.2.1. Check that the IID, PID, and MID in the original-initials-eur-king-1updateids.txt or original-initials-eur-king-1updateparents.txt files have not been changed from SENTRIX format. If the IIDs have been changed from the SENTRIX format use the following commands to convert back to SENTRIX format. Otherwise proceed to step 5.5.
+      
+         5.2.1.1. Command to convert the updateids file: awk '{print $1,$2,$3,$2}' original-initials-eur-king-1updateids.txt > original-initials-eur-king-1updateids.txt-sentrix
+      
+         5.2.1.2. Command to convert the updateparents file:
          R
          library(tidyr)
          update <- read.table('original-initials-eur-king-1updateparents.txt',h=F)
@@ -258,92 +284,115 @@ This can be a memory intensive step particularly if you have a large batch, ther
          update <- update[,c(1:7)]
          write.table(update, 'original-initials-eur-king-1updateparents.txt-sentrix', row.names=F, col.names=F, sep='\t', quote=F)
          q()
-   1. Update family and individual IDs using the following commands:
-      1. If the IID was not changed from SENTRIX format use:
-         plink --bfile original-initials-eur-linked-only --update-ids original-initials-eur-king-1updateids.txt --make-bed --out original-initials-eur-king-1-ids
-      1. If the IID was changed from SENTRIX format use:
-         plink --bfile original-initials-eur-linked-only --update-ids original-initials-eur-king-1updateids.txt-sentrix --make-bed --out original-initials-eur-king-1-ids
-   1. Update paternal and maternal IDs using the following commands:
-      1. If the IID was not changed from SENTRIX format use:
-         plink --bfile original-initials-eur-king-1-ids --update-parents original-initials-eur-king-1updateparents.txt --make-bed --out original-initials-eur-king-1-parents
-      1. If the IID was changed from SENTRIX format use:
-         plink --bfile original-initials-eur-king-1-ids --update-parents original-initials-eur-king-1updateparents.txt-sentrix --make-bed --out original-initials-eur-king-1-parents
-1. ### Identified relationships:
-   1. Look at the original-initials-eur-king-1-slurm.txt file and record the number of various between and within family relationships that KING identified/inferred in comparison to MoBa (during the related analysis).
-1. ### YOB and Sex check
-In the “resources” folder in DATA/DURABLE, there are files named “yob.txt” and “sex.txt” that contains the year of birth of MoBa participants (the three columns in the file are: FID, IID and year-of-birth) and the sex of MoBa participants (the three columns in the file are: FID, IID and sex), respectively. Copy these files to your working directory and run the commands below.
+   
+      5.2.2. Update family and individual IDs using the following commands:
+         5.2.2.1. If the IID was not changed from SENTRIX format use: plink --bfile original-initials-eur-linked-only --update-ids original-initials-eur-king-1updateids.txt --make-bed --out original-initials-eur-king-1-ids
+         5.2.2.2. If the IID was changed from SENTRIX format use: plink --bfile original-initials-eur-linked-only --update-ids original-initials-eur-king-1updateids.txt-sentrix --make-bed --out original-initials-eur-king-1-ids
+   
+      5.2.3. Update paternal and maternal IDs using the following commands:
+         5.2.3.1. If the IID was not changed from SENTRIX format use: plink --bfile original-initials-eur-king-1-ids --update-parents original-initials-eur-king-1updateparents.txt --make-bed --out original-initials-eur-king-1-parents
+         5.2.3.2. If the IID was changed from SENTRIX format use: plink --bfile original-initials-eur-king-1-ids --update-parents original-initials-eur-king-1updateparents.txt-sentrix --make-bed --out original-initials-eur-king-1-parents
 
-1. YOB check
-   ./match.pl -f yob.txt -g original-initials-eur-king-1-parents.fam -k 2 -l 2 -v 3 > original-initials-eur-king-1-children-yob.txt
-   ./match.pl -f yob.txt -g original-initials-eur-king-1-children-yob.txt -k 2 -l 3 -v 3 > original-initials-eur-king-1-children-fathers-yob.txt
-   ./match.pl -f yob.txt -g original-initials-eur-king-1-children-fathers-yob.txt -k 2 -l 4 -v 3 > original-initials-eur-king-1-yob.txt
-   rm original-initials-eur-king-1-children-yob.txt original-initials-eur-king-1-children-fathers-yob.txt
-   awk ‘{if ($7<$8 || $7<$9) print $0, “PROBLEM”; else print $0, “OK”}’ original-initials-eur-king-1-yob.txt > original-initials-eur-king-1-yob-check.txt
-   awk ‘$10==”PROBLEM” {print $0}’ original-initials-eur-king-1-yob-check.txt > original-initials-eur-king-1-yob-problem.txt
-1. Sex check
-   ./match.pl -f original-initials-eur-king-1-parents.fam -g original-initials-eur-king-1-parents.fam -k 2 -l 3 -v 5 > original-initials-eur-king-1-father-sex.txt
-   ./match.pl -f original-initials-eur-king-1-parents.fam -g original-initials-eur-king-1-father-sex.txt -k 2 -l 4 -v 5 > original-initials-eur-king-1-sex.txt
-   rm original-initials-eur-king-1-father-sex.txt
-   awk ‘{if ($7==2 || $8==1) print $0, “PROBLEM”; else print $0, “OK”}’ original-initials-eur-king-1-sex.txt > original-initials-eur-king-1-sex-check.txt
-   awk ‘$10==”PROBLEM” {print $0}’ original-initials-eur-king-1-sex-check.txt > original-initials-eur-king-1-sex-problem.txt
-1. Check the number of problematic families. Use the following commands to get the number:
-   wc -l original-initials-eur-king-1-yob-problem.txt
-   wc -l original-initials-eur-king-1-sex-problem.txt
-1. ### Examine the relationships within families (kin file)
-   1. Identify any instances where the inferred relationships do not match those reported in MoBa:
+   5.3. Identified relationships:
+      
+      5.3.1. Look at the original-initials-eur-king-1-slurm.txt file and record the number of various between and within family relationships that KING identified/inferred in comparison to MoBa (during the related analysis).
+
+   5.4. YOB and Sex check
+   
+   In the “resources” folder in DATA/DURABLE, there are files named “yob.txt” and “sex.txt” that contains the year of birth of MoBa participants (the three columns in the file are: FID, IID and year-of-birth) and the sex of MoBa participants (the three columns in the file are: FID, IID and sex), respectively. Copy these files to your working directory and run the commands below.
+
+      5.4.1. YOB check
+      ./match.pl -f yob.txt -g original-initials-eur-king-1-parents.fam -k 2 -l 2 -v 3 > original-initials-eur-king-1-children-yob.txt
+      ./match.pl -f yob.txt -g original-initials-eur-king-1-children-yob.txt -k 2 -l 3 -v 3 > original-initials-eur-king-1-children-fathers-yob.txt
+      ./match.pl -f yob.txt -g original-initials-eur-king-1-children-fathers-yob.txt -k 2 -l 4 -v 3 > original-initials-eur-king-1-yob.txt
+      rm original-initials-eur-king-1-children-yob.txt original-initials-eur-king-1-children-fathers-yob.txt
+      awk ‘{if ($7<$8 || $7<$9) print $0, “PROBLEM”; else print $0, “OK”}’ original-initials-eur-king-1-yob.txt > original-initials-eur-king-1-yob-check.txt
+      awk ‘$10==”PROBLEM” {print $0}’ original-initials-eur-king-1-yob-check.txt > original-initials-eur-king-1-yob-problem.txt
+
+      5.4.2. Sex check
+      ./match.pl -f original-initials-eur-king-1-parents.fam -g original-initials-eur-king-1-parents.fam -k 2 -l 3 -v 5 > original-initials-eur-king-1-father-sex.txt
+      ./match.pl -f original-initials-eur-king-1-parents.fam -g original-initials-eur-king-1-father-sex.txt -k 2 -l 4 -v 5 > original-initials-eur-king-1-sex.txt
+      rm original-initials-eur-king-1-father-sex.txt
+      awk ‘{if ($7==2 || $8==1) print $0, “PROBLEM”; else print $0, “OK”}’ original-initials-eur-king-1-sex.txt > original-initials-eur-king-1-sex-check.txt
+      awk ‘$10==”PROBLEM” {print $0}’ original-initials-eur-king-1-sex-check.txt > original-initials-eur-king-1-sex-problem.txt
+
+      5.4.3. Check the number of problematic families. Use the following commands to get the number:
+      wc -l original-initials-eur-king-1-yob-problem.txt
+      wc -l original-initials-eur-king-1-sex-problem.txt
+
+   5.5. Examine the relationships within families (kin file)
+   
+      5.5.1. Identify any instances where the inferred relationships do not match those reported in MoBa:
       awk ‘$16>0 {print $0}’ original-initials-eur-king-1.kin > original-initials-eur-king-1.kin-errors
       ./match.pl -f /tsd/p697/data/durable/projects/moba\_qc\_imputation/resources/genotyped\_pedigree.txt -g original-initials-eur-king-1.kin-errors -k 4 -l 2 -v 8 > original-initials-eur-king-1.kin-errors-role1
       ./match.pl -f /tsd/p697/data/durable/projects/moba\_qc\_imputation/resources/genotyped\_pedigree.txt -g  original-initials-eur-king-1.kin-errors-role1 -k 4 -l 3 -v 8 > original-initials-eur-king-1.kin-errors
       rm  original-initials-eur-king-1.kin-errors-role1
       wc -l original-initials-eur-king-1.kin-errors
-      1. Identify any inferred duplicates/MZ twins that were unexpected:
+      
+         5.5.1.1. Identify any inferred duplicates/MZ twins that were unexpected:
          awk ‘$15==”Dup/MZ” {print $0}’ original-initials-eur-king-1.kin-errors > original-initials-eur-king-1.kin-errors-MZ
          wc -l original-initials-eur-king-1.kin-errors-MZ
-      1. Identify any inferred parent-offspring relationships that were unexpected:
+      
+         5.5.1.2. Identify any inferred parent-offspring relationships that were unexpected:
          awk ‘$15==”PO” {print $0}’ original-initials-eur-king-1.kin-errors > original-initials-eur-king-1.kin-errors-PO
          wc -l original-initials-eur-king-1.kin-errors-PO
-      1. Identify any inferred full siblings that were unexpected:
+      
+         5.5.1.3. Identify any inferred full siblings that were unexpected:
          awk ‘$15==”FS” {print $0}’ original-initials-eur-king-1.kin-errors > original-initials-eur-king-1.kin-errors-FS
          wc -l original-initials-eur-king-1.kin-errors-FS
-      1. Identify any inferred second degree relatives that were unexpected:
+      
+         5.5.1.4. Identify any inferred second degree relatives that were unexpected:
          awk ‘$15==”2nd” {print $0}’ original-initials-eur-king-1.kin-errors > original-initials-eur-king-1.kin-errors-2nd
          wc -l original-initials-eur-king-1.kin-errors-2nd
-      1. Identify any inferred third degree relatives that were unexpected:
+      
+         5.5.1.5. Identify any inferred third degree relatives that were unexpected:
          awk ‘$15==”3rd” {print $0}’ original-initials-eur-king-1.kin-errors > original-initials-eur-king-1.kin-errors-3rd
          wc -l original-initials-eur-king-1.kin-errors-3rd
-      1. Identify any inferred fourth degree relatives that were unexpected:
+      
+         5.5.1.6. Identify any inferred fourth degree relatives that were unexpected:
          awk ‘$15==”4th” {print $0}’ original-initials-eur-king-1.kin-errors > original-initials-eur-king-1.kin-errors-4th
          wc -l original-initials-eur-king-1.kin-errors-4th
-      1. Identify any inferred unrelated individuals that were unexpected:
+         
+         5.5.1.7. Identify any inferred unrelated individuals that were unexpected:
          awk ‘$15==”UN” {print $0}’ original-initials-eur-king-1.kin-errors > original-initials-eur-king-1.kin-errors-UN
          wc -l original-initials-eur-king-1.kin-errors-UN
-1. ### Examine the relationships between families (kin0 file)
-   1. Identify any instances where the inferred relationships do not match those reported in MoBa:
+         
+   5.6 Examine the relationships between families (kin0 file)
+   
+      5.6.1. Identify any instances where the inferred relationships do not match those reported in MoBa:
       awk ‘{if ($14==”Dup/MZ” || $14==”PO” || $14==”FS”) print $0}’ original-initials-eur-king-1.kin0 > original-initials-eur-king-1.kin0-errors
       ./match.pl -f /tsd/p697/data/durable/projects/moba\_qc\_imputation/resources/genotyped\_pedigree.txt -g original-initials-eur-king-1.kin0-errors -k 4 -l 2 -v 8 > original-initials-eur-king-1.kin0-errors-role1
       ./match.pl -f /tsd/p697/data/durable/projects/moba\_qc\_imputation/resources/genotyped\_pedigree.txt -g  original-initials-eur-king-1.kin0-errors-role1 -k 4 -l 4 -v 8 > original-initials-eur-king-1.kin0-errors
       rm  original-initials-eur-king-1.kin0-errors-role1
       wc -l original-initials-eur-king-1.kin0-errors
-      1. Identify any inferred duplicates/MZ twins that were unexpected:
+      
+         5.6.1.1. Identify any inferred duplicates/MZ twins that were unexpected:
          awk ‘$14==”Dup/MZ” {print $0}’ original-initials-eur-king-1.kin0-errors > original-initials-eur-king-1.kin0-errors-MZ
          wc -l original-initials-eur-king-1.kin0-errors-MZ
-      1. Identify any inferred parent-offspring relationships that were unexpected:
+         5.6.1.2. Identify any inferred parent-offspring relationships that were unexpected:
          awk ‘$14==”PO” {print $0}’ original-initials-eur-king-1.kin0-errors > original-initials-eur-king-1.kin0-errors-PO
          wc -l original-initials-eur-king-1.kin0-errors-PO
-      1. Identify any inferred full siblings that were unexpected:
+         5.6.1.3. Identify any inferred full siblings that were unexpected:
          awk ‘$14==”FS” {print $0}’ original-initials-eur-king-1.kin0-errors > original-initials-eur-king-1.kin0-errors-FS
          wc -l original-initials-eur-king-1.kin0-errors-FS
-1. ### Plot the relationships
-   1. Make histograms of the estimated kinship coefficients between families
-      1. Create file that is smaller for reading into R
-         awk ‘{print $2, $4, $19}’ original-initials-eur-king-1.ibs0 > original-initials-eur-king-1.ibs0\_hist
-      1. Run plot-kinship-histogram.R according to the instructions in $GITHUB/lib/README-for-plot-kinship-histograms.txt. Please specify the following: input: original-initials-eur-king-1.ibs0\_hist and output: original-initials-eur-king-1-hist
+
+   5.7. Plot the relationships
+   
+      5.7.1. Make histograms of the estimated kinship coefficients between families
+         
+         5.7.1.1. Create file that is smaller for reading into R: awk ‘{print $2, $4, $19}’ original-initials-eur-king-1.ibs0 > original-initials-eur-king-1.ibs0\_hist
+         
+         5.7.1.2. Run plot-kinship-histogram.R according to the instructions in $GITHUB/lib/README-for-plot-kinship-histograms.txt. Please specify the following: input: original-initials-eur-king-1.ibs0\_hist and output: original-initials-eur-king-1-hist
          Example: Rscript $GITHUB/lib/plot-kinship-histogram.R m12good-ec-eur-king-1.ibs0\_hist m12good-ec-eur-king-1-hist
-      1. Remove the file used to plot the kinship histogram
+         
+         5.7.1.3. Remove the file used to plot the kinship histogram
          rm original-initials-eur-king-1.ibs0\_hist
-      1. Please post the graph on slack, copy it to the export folder for module II, and record the name of the plot in the google sheet.
-   1. Make plots to visualize the between and within family relationships as reported by MoBa vs inferred by KING
-   1. Please run the create-relplot.sh script that uses the relplot R script from KING, and generates a png file with four or two merged subplots with optionally customized legend positions. Usage information is on github (<https://github.com/norment/moba_qc_imputation/tree/master/tools#create-relplotsh>).
+      
+         5.7.1.4. Please post the graph on slack, copy it to the export folder for module II, and record the name of the plot in the google sheet.
+   
+      5.7.2. Make plots to visualize the between and within family relationships as reported by MoBa vs inferred by KING
+   
+      5.7.3. Please run the create-relplot.sh script that uses the relplot R script from KING, and generates a png file with four or two merged subplots with optionally customized legend positions. Usage information is on github (<https://github.com/norment/moba_qc_imputation/tree/master/tools#create-relplotsh>).
       Usage: sh $GITHUB/tools/create-relplot.sh r\_relplot tag [legendpos1 legendpos2 legendpos3 legendpos4]
       Arguments:
       r\_relplot - R script file for relplot from KING
@@ -353,32 +402,41 @@ In the “resources” folder in DATA/DURABLE, there are files named “yob.txt�
       legendpos3 - legend position of plot 3: topleft, topright, bottomleft, bottomright
       legendpos4 - legend position of plot 4: topleft, topright, bottomleft, bottomright
       Example: sh create-relplot.sh rotterdam1-yc-eur-king-1\_relplot.R "Rotterdam1 EUR, round 1" topright bottomright topright bottomright
-   1. Post the plots on slack, copy the plot file to the export folder for plots of Module II, and record the plot name in the google sheet for report production.
-1. ### Fix within and between family issues
-Let Elizabeth know once you have completed the above steps and she will investigate the pedigree errors and create the update and remove files.
+      
+      5.7.4. Post the plots on slack, copy the plot file to the export folder for plots of Module II, and record the plot name in the google sheet for report production.
 
-1. Remove individuals with impossible relationships and update family and individual ids.
-   plink --bfile original-initials-eur-king-1-parents --remove original-initials-eur-king-1-unexpected-relationships.txt --update-ids original-initials-eur-king-1-fix-ids.txt --make-bed --out original-initials-eur-king-1-fix-ids
-1. Update paternal and maternal ids.
-   plink --bfile original-initials-eur-king-1-fix-ids --update-parents original-initials-eur-king-1-fix-parents.txt --make-bed --out original-initials-eur-king-1-fix-parents
-1. Please make sure the number of individuals in the remove, update-ids, and update-parents files matches the number of individuals removed or updated in the plink log outputs.
-1. ### Identify any pedigree issues
-   1. Create the covariate file
-      1. Copy the age.txt file to your working directory.
-      1. Update the FID to the match those updated during the above KING analysis.
+   5.8. Fix within and between family issues
+   
+   Let Elizabeth know once you have completed the above steps and she will investigate the pedigree errors and create the update and remove files.
+
+      5.8.1. Remove individuals with impossible relationships and update family and individual ids: plink --bfile original-initials-eur-king-1-parents --remove original-initials-eur-king-1-unexpected-relationships.txt --update-ids original-initials-eur-king-1-fix-ids.txt --make-bed --out original-initials-eur-king-1-fix-ids
+   
+      5.8.2. Update paternal and maternal ids:  plink --bfile original-initials-eur-king-1-fix-ids --update-parents original-initials-eur-king-1-fix-parents.txt --make-bed --out original-initials-eur-king-1-fix-parents
+      5.8.3. Please make sure the number of individuals in the remove, update-ids, and update-parents files matches the number of individuals removed or updated in the plink log outputs.
+
+   5.9 Identify any pedigree issues
+      
+      5.9.1. Create the covariate file
+         
+         5.9.1.1. Copy the age.txt file to your working directory.
+         
+         5.9.1.2. Update the FID to the match those updated during the above KING analysis.
          ./match.pl -f original-initials-eur-king-1-fix-parents.fam -g age.txt -k 2 -l 2 -v 1 | awk ‘$4!=”-” {print $4, $2, $3}’ > original-initials-eur-king-1-fix-parents.cov
          sed -i ‘1 i FID IID Age’ original-initials-eur-king-1-fix-parents.cov
-   1. Run KING build using the following command:
-      /cluster/projects/p697/projects/moba\_qc\_imputation/software/king225 -b original-initials-eur-king-1-fix-parents.bed --build --degree 2 --prefix original-initials-eur-king-1.5 > original-initials-eur-king-1.5-slurm.txt
-   1. Identify any issues
-      1. Go through the build log file and see if there were any pedigree errors reported.
-      1. See if an update ids or parents file was produced.
-   1. Let Elizabeth know if there were any issues and she will investigate what is going on.
-   1. Remove individuals with impossible relationships and update family and individual ids.
-      1. Remove individuals with impossible relationships and update family and individual ids.
-         plink --bfile original-initials-eur-king-1-fix-parents --remove original-initials-eur-king-1.5-unexpected-relationships.txt --update-ids original-initials-eur-king-1.5-fix-ids.txt --make-bed --out original-initials-eur-king-1.5-fix-ids
-      1. Update paternal and maternal ids.
-         plink --bfile original-initials-eur-king-1.5-fix-ids --update-parents original-initials-eur-king-1.5-fix-parents.txt --make-bed --out original-initials-eur-king-1.5-fix-parents
+         
+      5.9.2. Run KING build using the following command: /cluster/projects/p697/projects/moba\_qc\_imputation/software/king225 -b original-initials-eur-king-1-fix-parents.bed --build --degree 2 --prefix original-initials-eur-king-1.5 > original-initials-eur-king-1.5-slurm.txt
+   
+      5.9.3. Identify any issues
+         5.9.3.1. Go through the build log file and see if there were any pedigree errors reported.
+      
+         5.9.3.1. See if an update ids or parents file was produced.
+   
+      5.9.4. Let Elizabeth know if there were any issues and she will investigate what is going on.
+   
+      5.9.5. Remove individuals with impossible relationships and update family and individual ids.
+         5.9.5.1. Remove individuals with impossible relationships and update family and individual ids: plink --bfile original-initials-eur-king-1-fix-parents --remove original-initials-eur-king-1.5-unexpected-relationships.txt --update-ids original-initials-eur-king-1.5-fix-ids.txt --make-bed --out original-initials-eur-king-1.5-fix-ids
+         5.9.5.2. Update paternal and maternal ids: plink --bfile original-initials-eur-king-1.5-fix-ids --update-parents original-initials-eur-king-1.5-fix-parents.txt --make-bed --out original-initials-eur-king-1.5-fix-parents
+
 1. ## PCA with 1000 Genomes (1KG)
 If you had no problematic families, please use plink files with original-initials-eur-king-1-parents prefix (as updated based on the information from KING). If you had problematic families, please use PLINK files created after you’ve corrected any errors there may have been. For example, plink files with original-initials-eur-king-1-fix-parents or original-initials-eur-king-1.5-fix-parents prefixes. The PLINK commands below exemplify a situation when there were no errors in KING inferences. Please adjust according to your data. If you have any questions about this, please let Elizabeth know on slack.
 1. ### Prune and remove long stretches of LD
