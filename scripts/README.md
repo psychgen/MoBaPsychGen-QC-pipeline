@@ -1,0 +1,1 @@
+This folder contains R, python, and bash scripts used to run the QC. README files for the R and python scripts can be found in the relevant directories. In this directory there are 3 bash scripts that were used to run module 1, module 2, and module X basic QC.
