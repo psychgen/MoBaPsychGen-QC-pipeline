@@ -6,7 +6,6 @@
 * [plot-pca-selected-subsample.R](#plot-pca-selected-subsampler)
 * [plot-missingness-histogram.R](#plot-missingness-histogramr)
 * [plot-heterozygosity-common.R](#plot-heterozygosity-commonr)
-* [plot-heterozygosity-rare.R](#plot-heterozygosity-rarer)
 * [plot-ibd.R](#plot-ibdr)
 * [plot-qqplot.R](#plot-qqplotr)
 * [create-liftover-input.R](#create-liftover-inputr)
