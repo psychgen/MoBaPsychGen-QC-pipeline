@@ -16,9 +16,10 @@ Unless otherwise specified, all commands are supposed to be run in your working 
    
 ## 2. Identify SNPs common to all batches
    
-   2.1. Use R to identify overlapping SNPs: R
+   2.1. Use R to identify overlapping SNPs:
    
       2.1.1. Read in bim files, subset the column containing the SNP names, and update the column name.
+         R
          # Below example includes six batches (r1077, r1077, r1108, r1109, r1135, and r1146)
          R1066 <- read.table(‘original-initials-eur-4-batch.bim’,h=F)
          R1066 <- data.frame(R1066 [,2])
@@ -38,6 +39,7 @@ Unless otherwise specified, all commands are supposed to be run in your working 
          R1146 <- read.table(‘original-initials-eur-4-batch.bim’,h=F)
          R1146 <- data.frame(R1146 [,2)
          colnames(R1067) <- “SNP”
+   
       2.1.2. Identify SNPs in all batches
          # R can only merge 2 data frames at a time. Therefore, perform systematic merging until all batches are merged together.
          R1066\_R1077 <- data.frame(merge(R1066, R1077, by=”SNP”))
@@ -50,6 +52,7 @@ Unless otherwise specified, all commands are supposed to be run in your working 
          rm(R1066\_R1077, R1108\_R1109)
          Release <- data.frame(merge(R1066\_R1077\_R1108\_R1109 , R1135\_R1146, by=”SNP”))
          rm(R1066\_R1077\_R1108\_R1109, R1135\_R1146)
+     
       2.1.3. Create file containing the list of SNP IDs to extract in PLINK bfiles
          write.table(release, ‘releaseNR\_snps.txt’, quote=F, row.names=F, col.names=F, sep=’\t’) # where NR corresponds to the release number you are analysing 
          q()
