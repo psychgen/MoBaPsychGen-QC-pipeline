@@ -943,238 +943,329 @@ In the “resources” folder in DATA/DURABLE, there are files named “yob.txt�
          10.9.5.3. If you had individuals removed, get the IDs of the removed individuals and add them to the IDs of individuals who were removed previously: ./match.pl -f original-initials-eur-king-2.5-fix-parents.fam -g original-initials-eur-king-2-fix-parents.fam -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $1,$2,”pedigree and known relatedness, round 2”}’ >> original-initials-eur-2-removed-individuals.txt
 
 ## 11. Cryptic relatedness
+
 In this section, we aim to remove individuals who share too much kinship with too many people.
 
-1. Create files with (1) counts of individuals with whom each individual shares >=2.5% kinship and (2) sum of all kinship coefficients >=2.5% per individual 
-   1. Copy “cryptic.sh” file from “scripts” folder to your working directory and make the file executable:
-      chmod +x cryptic.sh
-   1. Run the cryptic.sh script using the ibs0 output from KING.
-      ./cryptic.sh original-initials-eur-king-2.ibs0 original-initials-eur-cryptic-2
-1. Create plots
-   1. Run the $GITHUB/lib/plot-cryptic.R script. See the “README-for-cryptic-plot” file for usage instructions.
+   11.1. Create files with (1) counts of individuals with whom each individual shares >=2.5% kinship and (2) sum of all kinship coefficients >=2.5% per individual 
+   
+      11.1.1. Copy “cryptic.sh” file from “scripts” folder to your working directory and make the file executable: chmod +x cryptic.sh
+   
+      11.1.2. Run the cryptic.sh script using the ibs0 output from KING: ./cryptic.sh original-initials-eur-king-2.ibs0 original-initials-eur-cryptic-2
+
+   11.2. Create plots
+   
+      11.2.1. Run the $GITHUB/lib/plot-cryptic.R script. See the “README-for-cryptic-plot” file for usage instructions.
       For input1, please use “original-initials-eur-cryptic-2-kinship-sum.txt” file
       For input2, please use “original-initials-eur-cryptic-2-counts.txt” file
       For tag, please use the tag from plot-PLINK file
       For output, please use original-initials-eur-cryptic-2
       Example command: Rscript $GITHUB/lib/plot-cryptic.R m24-tz-eur-cryptic-2-kinship-sum.txt m24-tz-eur-cryptic-2-counts.txt "M24 EUR" m24-tz-eur-cryptic-2
-   1. Please post your plot on slack, where we’ll determine what threshold would fit the data in your batch the best.
-1. Remove outliers
-   1. Identify cryptic relatedness outliers. If your threshold is, for example, 15 for the sum of kinship, the example commands would be:
+   
+      11.2.2. Please post your plot on slack, where we’ll determine what threshold would fit the data in your batch the best.
+
+   11.3. Remove outliers
+   
+      11.3.1. Identify cryptic relatedness outliers. If your threshold is, for example, 15 for the sum of kinship, the example commands would be:
       awk ‘$2>15 {print $1}’ original-initials-eur-cryptic-2-kinship-sum.txt > original-initials-eur-cryptic-2-sum-remove
       ./match.pl -f original-initials-eur-king-2.5-fix-parents.fam -g original-initials-eur-cryptic-2-sum-remove -k 2 -l 1 -v 1 | awk ‘{print $2, $1}’ > original-initials-eur-cryptic-2-sum-remove.txt
-   1. Remove cryptic relatedness outliers.
-      plink --bfile original-initials-eur-king-2.5-fix-parents --remove original-initials-eur-cryptic-2-sum-remove.txt --make-bed --out original-initials-eur-cryptic-clean-2
-      1. Please make sure that the number of individuals removed (as shown in the log file) corresponds or is in line with the number of individuals in original-initials-eur-cryptic-2-sum-remove.txt file.
-         wc -l original-initials-eur-cryptic-2-sum-remove.txt
-      1. Please record the number of individuals removed due to cryptic relatedness.
-      1. If you had individuals removed, get the IDs of the removed individuals and add them to the IDs of individuals who were removed previously:
-         ./match.pl -f original-initials-eur-king-2.5-fix-parents.fam -g original-initials-eur-cryptic-clean-2.fam -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $1,$2,”cryptic relatedness, round 2”}’ >> original-initials-eur-2-removed-individuals.txt
-1. ## Mendelian errors
-   1. Remove families with more than 5% Mendel errors and SNPs with more than 1% of Mendel errors and zeros out the other minor Mendel errors.
-      1. If your fam file contains no individuals with unknown sex run the below command then move to step 12.2
-         plink --bfile original-initials-eur-cryptic-clean-2 --me 0.05 0.01 --set-me-missing --mendel-duos --make-bed --out original-initials-eur-me-clean-sex-2
-      1. If your fam file contains individuals with unknown sex, use the PLINK inferred sex for people whose sex is missing.
+   
+      11.3.2. Remove cryptic relatedness outliers: plink --bfile original-initials-eur-king-2.5-fix-parents --remove original-initials-eur-cryptic-2-sum-remove.txt --make-bed --out original-initials-eur-cryptic-clean-2
+      
+         11.3.2.1. Please make sure that the number of individuals removed (as shown in the log file) corresponds or is in line with the number of individuals in original-initials-eur-cryptic-2-sum-remove.txt file: wc -l original-initials-eur-cryptic-2-sum-remove.txt
+      
+         11.3.2.2. Please record the number of individuals removed due to cryptic relatedness.
+      
+         11.3.2.3. If you had individuals removed, get the IDs of the removed individuals and add them to the IDs of individuals who were removed previously: ./match.pl -f original-initials-eur-king-2.5-fix-parents.fam -g original-initials-eur-cryptic-clean-2.fam -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $1,$2,”cryptic relatedness, round 2”}’ >> original-initials-eur-2-removed-individuals.txt
+
+## 12. Mendelian errors
+
+   12.1. Remove families with more than 5% Mendel errors and SNPs with more than 1% of Mendel errors and zeros out the other minor Mendel errors.
+      
+      12.1.1. If your fam file contains no individuals with unknown sex run the below command then move to step 12.2: plink --bfile original-initials-eur-cryptic-clean-2 --me 0.05 0.01 --set-me-missing --mendel-duos --make-bed --out original-initials-eur-me-clean-sex-2
+      
+      12.1.2. If your fam file contains individuals with unknown sex, use the PLINK inferred sex for people whose sex is missing.
          awk ‘$3==0 {print $1,$2,$4}’ original-initials-eur-2-sexcheck.sexcheck > original-initials-eur-2-sex-me.txt
          plink --bfile original-initials-eur-cryptic-clean-2 --update-sex original-initials-eur-2-sex-me.txt --me 0.05 0.01 --set-me-missing --mendel-duos --make-bed --out original-initials-eur-me-clean-2
-      1. Restore the sex that was before update for ME check purposes:
-         awk ‘{print $1,$2,0}’ original-initials-eur-2-sex-me.txt > original-initials-eur-2-sex-me-back.txt
-      1. plink --bfile original-initials-eur-me-clean-2 --update-sex original-initials-eur-2-sex-me-back.txt --make-bed --out original-initials-eur-me-clean-sex-2
-   1. Record the number of families removed, the number of SNPs removed and the number of Mendelian errors zero-ed out (all these numbers can be obtained from the plink log file of step 12.1).
-   1. If you had individuals (families) removed, get the IDs of the removed individuals and add them to the IDs of individuals who were removed previously:
-      ./match.pl -f original-initials-eur-me-clean-sex-2.fam -g original-initials-eur-cryptic-clean-2.fam -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $1,$2,”Mendelian-error, round 2”}’ >> original-initials-eur-2-removed-individuals.txt
-   1. If you had SNPs removed, add their IDs to those that were removed previously:
-      ./match.pl -f original-initials-eur-me-clean-sex-2.bim -g original-initials-eur-cryptic-clean-2.bim -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $2,”Mendelian-error, round 2”}’ >> original-initials-eur-2-bad-snps.txt
-1. ## PCA with 1KG
-   1. ### Prune the data and remove long stretches of LD
-      1. Prune the data
-         plink --bfile original-initials-eur-me-clean-sex-2 --indep-pairwise 3000 1500 0.1 --out original-initials-eur-me-clean-sex-2-indep
-         1. If needed, repeat the pruning to remove residual LD, until there are about 100,000 SNPs left.
-      1. Extract the set of pruned SNPs
-         plink --bfile original-initials-eur-me-clean-sex-2 --extract original-initials-eur-me-clean-sex-2-indep.prune.in --make-bed --out original-initials-eur-me-clean-sex-2-pruned
-      1. Long LD regions
-         1. Copy the file containing the list of long LD regions (Build37) from the “resources” folder to your working directory (name of the file is “high-ld.txt”).
-         1. Create high LD set
-            plink --bfile original-initials-eur-me-clean-sex-2-pruned --make-set high-ld.txt --write-set --out original-initials-eur-me-clean-sex-2-highld
-         1. Exclude SNPs in high LD set
-            plink --bfile original-initials-eur-me-clean-sex-2-pruned --exclude original-initials-eur-me-clean-sex-2-highld.set --make-bed --out original-initials-eur-me-clean-sex-2-trimmed
-   1. ### Identify SNPs overlapping with 1KG
-      1. Copy the 1KG PLINK bfiles from the “resources” folder in DATA/DURABLE to your working directory (1kg.bed,1kg.bim and 1kg.fam); these files have the strand ambiguous SNPs already removed.
-      1. Run the following commands to identify the overlapping SNPs
-         cut -f2 1kg.bim | sort -s > 1kg.bim.sorted
-         cut -f2 original-initials-eur-me-clean-sex-2-trimmed.bim | sort -s > original-initials-eur-me-clean-sex-2-trimmed.bim.sorted
-         join 1kg.bim.sorted original-initials-eur-me-clean-sex-2-trimmed.bim.sorted > original-initials-eur-me-clean-sex-2-1kg-snps.txt
-         rm original-initials-eur-me-clean-sex-2-trimmed.bim.sorted
-      1. Record the number of SNPs you have common in your batch and in 1KG:
-         wc -l original-initials-eur-me-clean-sex-2-1kg-snps.txt
-   1. ### Merge with the 1KG dataset
-      1. Extract the overlapping SNPs
-         1. In your batch:
-            plink --bfile original-initials-eur-me-clean-sex-2-trimmed --extract original-initials-eur-me-clean-sex-2-1kg-snps.txt --make-bed --out original-initials-eur-me-clean-sex-2-1kg-common
-         1. In the 1KG dataset:
-            plink --bfile 1kg --extract original-initials-eur-me-clean-sex-2-1kg-snps.txt --make-bed --out 1kg-original-initials-eur-me-clean-sex-2-common
-      1. Merge the bfiles
-         plink --bfile original-initials-eur-me-clean-sex-2-1kg-common --bmerge 1kg-original-initials-eur-me-clean-sex-2-common --make-bed --out original-initials-eur-me-clean-sex-2-1kg-merged
-         1. If you have SNPs that have 3+ alleles, flip those alleles in 1kg data and merge again. To flip, run the following command:
-            plink --bfile 1kg-original-initials-eur-me-clean-sex-2-common --flip original-initials-eur-me-clean-sex-2-1kg-merged-merge.missnp --make-bed --out 1kg-original-initials-eur-me-clean-sex-2-common-flip
-            To merge again, run the following command:
-            plink --bfile original-initials-eur-me-clean-sex-2-1kg-common --bmerge 1kg-original-initials-eur-me-clean-sex-2-common-flip --make-bed --out original-initials-eur-me-clean-sex-2-1kg-second-merged
-         1. If you still have SNPs with 3+ alleles after merging with flipped data, remove those SNPs from both 1KG and MoBa data. To remove the SNPs with 3+ alleles from MoBa and from 1kg, run the following commands:
-            plink --bfile original-initials-eur-me-clean-sex-2-1kg-common --exclude original-initials-eur-me-clean-sex-2-1kg-second-merged-merge.missnp --make-bed --out original-initials-eur-me-clean-sex-2-1kg-common-clean
-            plink --bfile 1kg-original-initials-eur-me-clean-sex-2-common-flip --exclude original-initials-eur-me-clean-sex-2-1kg-second-merged-merge.missnp --make-bed --out 1kg-original-initials-eur-me-clean-sex-2-common-flip-clean
-            To merge again, run the following command:
-            plink --bfile original-initials-eur-me-clean-sex-2-1kg-common-clean --bmerge 1kg-original-initials-eur-me-clean-sex-2-common-flip-clean --make-bed --out original-initials-eur-me-clean-sex-2-1kg-clean-merged
-      1. Record how many SNPs you are going to use for PCA:
+      
+      12.1.3. Restore the sex that was before update for ME check purposes: awk ‘{print $1,$2,0}’ original-initials-eur-2-sex-me.txt > original-initials-eur-2-sex-me-back.txt
+      
+      12.1.4. plink --bfile original-initials-eur-me-clean-2 --update-sex original-initials-eur-2-sex-me-back.txt --make-bed --out original-initials-eur-me-clean-sex-2
+   
+   12.2. Record the number of families removed, the number of SNPs removed and the number of Mendelian errors zero-ed out (all these numbers can be obtained from the plink log file of step 12.1).
+   
+   12.3. If you had individuals (families) removed, get the IDs of the removed individuals and add them to the IDs of individuals who were removed previously: ./match.pl -f original-initials-eur-me-clean-sex-2.fam -g original-initials-eur-cryptic-clean-2.fam -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $1,$2,”Mendelian-error, round 2”}’ >> original-initials-eur-2-removed-individuals.txt
+   
+   12.4. If you had SNPs removed, add their IDs to those that were removed previously: ./match.pl -f original-initials-eur-me-clean-sex-2.bim -g original-initials-eur-cryptic-clean-2.bim -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $2,”Mendelian-error, round 2”}’ >> original-initials-eur-2-bad-snps.txt
+
+
+## 13. PCA with 1KG
+   
+   13.1. Prune the data and remove long stretches of LD
+      
+      13.1.1. Prune the data: plink --bfile original-initials-eur-me-clean-sex-2 --indep-pairwise 3000 1500 0.1 --out original-initials-eur-me-clean-sex-2-indep
+         
+         13.1.1.1. If needed, repeat the pruning to remove residual LD, until there are about 100,000 SNPs left.
+      
+      13.1.2. Extract the set of pruned SNPs: plink --bfile original-initials-eur-me-clean-sex-2 --extract original-initials-eur-me-clean-sex-2-indep.prune.in --make-bed --out original-initials-eur-me-clean-sex-2-pruned
+      
+      13.1.3. Long LD regions
+         
+         13.1.3.1. Copy the file containing the list of long LD regions (Build37) from the “resources” folder to your working directory (name of the file is “high-ld.txt”).
+         
+         13.1.3.2. Create high LD set: plink --bfile original-initials-eur-me-clean-sex-2-pruned --make-set high-ld.txt --write-set --out original-initials-eur-me-clean-sex-2-highld
+         
+         13.1.3.3. Exclude SNPs in high LD set: plink --bfile original-initials-eur-me-clean-sex-2-pruned --exclude original-initials-eur-me-clean-sex-2-highld.set --make-bed --out original-initials-eur-me-clean-sex-2-trimmed
+
+   13.2 Identify SNPs overlapping with 1KG
+      
+      13.2.1. Copy the 1KG PLINK bfiles from the “resources” folder in DATA/DURABLE to your working directory (1kg.bed,1kg.bim and 1kg.fam); these files have the strand ambiguous SNPs already removed.
+      
+      13.2.2. Run the following commands to identify the overlapping SNPs
+      cut -f2 1kg.bim | sort -s > 1kg.bim.sorted
+      cut -f2 original-initials-eur-me-clean-sex-2-trimmed.bim | sort -s > original-initials-eur-me-clean-sex-2-trimmed.bim.sorted
+      join 1kg.bim.sorted original-initials-eur-me-clean-sex-2-trimmed.bim.sorted > original-initials-eur-me-clean-sex-2-1kg-snps.txt
+      rm original-initials-eur-me-clean-sex-2-trimmed.bim.sorted
+      
+      13.2.3. Record the number of SNPs you have common in your batch and in 1KG: wc -l original-initials-eur-me-clean-sex-2-1kg-snps.txt
+   
+   13.3 Merge with the 1KG dataset
+      
+      13.3.1. Extract the overlapping SNPs
+         
+         13.3.1.1. In your batch: plink --bfile original-initials-eur-me-clean-sex-2-trimmed --extract original-initials-eur-me-clean-sex-2-1kg-snps.txt --make-bed --out original-initials-eur-me-clean-sex-2-1kg-common
+         
+         13.3.1.2. In the 1KG dataset: plink --bfile 1kg --extract original-initials-eur-me-clean-sex-2-1kg-snps.txt --make-bed --out 1kg-original-initials-eur-me-clean-sex-2-common
+
+      13.3.2. Merge the bfiles: plink --bfile original-initials-eur-me-clean-sex-2-1kg-common --bmerge 1kg-original-initials-eur-me-clean-sex-2-common --make-bed --out original-initials-eur-me-clean-sex-2-1kg-merged
+         
+         13.3.2.1. If you have SNPs that have 3+ alleles, flip those alleles in 1kg data and merge again. To flip, run the following command: plink --bfile 1kg-original-initials-eur-me-clean-sex-2-common --flip original-initials-eur-me-clean-sex-2-1kg-merged-merge.missnp --make-bed --out 1kg-original-initials-eur-me-clean-sex-2-common-flip
+         To merge again, run the following command: plink --bfile original-initials-eur-me-clean-sex-2-1kg-common --bmerge 1kg-original-initials-eur-me-clean-sex-2-common-flip --make-bed --out original-initials-eur-me-clean-sex-2-1kg-second-merged
+         If you still have SNPs with 3+ alleles after merging with flipped data, remove those SNPs from both 1KG and MoBa data. To remove the SNPs with 3+ alleles from MoBa and from 1kg, run the following commands:
+         plink --bfile original-initials-eur-me-clean-sex-2-1kg-common --exclude original-initials-eur-me-clean-sex-2-1kg-second-merged-merge.missnp --make-bed --out original-initials-eur-me-clean-sex-2-1kg-common-clean
+         plink --bfile 1kg-original-initials-eur-me-clean-sex-2-common-flip --exclude original-initials-eur-me-clean-sex-2-1kg-second-merged-merge.missnp --make-bed --out 1kg-original-initials-eur-me-clean-sex-2-common-flip-clean
+         To merge again, run the following command: plink --bfile original-initials-eur-me-clean-sex-2-1kg-common-clean --bmerge 1kg-original-initials-eur-me-clean-sex-2-common-flip-clean --make-bed --out original-initials-eur-me-clean-sex-2-1kg-clean-merged
+      
+      13.3.3. Record how many SNPs you are going to use for PCA:
          wc -l original-initials-eur-me-clean-sex-2-1kg-clean-merged.bim
-   1. ### PCA
-      1. Copy the populations.txt file from “resources” folder on DATA/DURABLE to your working directory. populations.txt is a text file containing the population, based on which PLINK will calculate the main PCs, in this case it will be just one word “parent”).
-      1. Create the original-initials-eur-me-clean-sex-2-fam-populations.txt – a text file with 3 columns: family ID, individual ID and so-called population, in this case it will be “parent” for unrelated individuals and “child” for related individuals. To create this file, do the following:
+   13.4. PCA
+      
+      13.4.1. Copy the populations.txt file from “resources” folder on DATA/DURABLE to your working directory. populations.txt is a text file containing the population, based on which PLINK will calculate the main PCs, in this case it will be just one word “parent”).
+      
+      13.4.2. Create the original-initials-eur-me-clean-sex-2-fam-populations.txt – a text file with 3 columns: family ID, individual ID and so-called population, in this case it will be “parent” for unrelated individuals and “child” for related individuals. To create this file, do the following:
          awk ‘{if($3==0 && $4==0) print $1,$2,”parent”; else print $1,$2,”child”}’  original-initials-eur-me-clean-sex-2-1kg-merged.fam > original-initials-eur-me-clean-sex-2-fam-populations.txt
-         1. If you did the flip, use original-initials-eur-me-clean-sex-2-1kg-second-merged.fam
-         1. If you had to remove SNPs after the flip, use original-initials-eur-me-clean-sex-2-1kg-clean-merged.fam
-      1. Run the PCA
-         plink --bfile original-initials-eur-me-clean-sex-2-1kg-merged --pca --within original-initials-eur-me-clean-sex-2-fam-populations.txt --pca-clusters populations.txt --out original-initials-eur-me-clean-sex-2-1kg-pca
-         1. If your data had SNPs with 3+ alleles and you did flip+merge steps, use the original-initials-eur-me-clean-sex-2-1kg-second-merged bfiles
-         1. If your data had SNPs with 3+ alleles after flip+merge steps and you did remove+merge steps, then use the original-initials-eur-me-clean-sex-2-1kg-clean-merged bfiles
-         1. If your batch is large and you need to run the PCA on Colossus, copy your PLINK input files into Colossus and use the PCA\_POP.job
-   1. ### Plot PCs
-      1. The individuals in 1kg.fam file are not ordered according to their population. But in order to assign colors during plotting, we need them to be in order. Thus, we will divide the file containing the PCs into “original-eur” and “1kg” portions, sort the “1kg” portion and combine the two together for plotting. This can be achieved with the following commands:
+         
+         13.4.2.1. If you did the flip, use original-initials-eur-me-clean-sex-2-1kg-second-merged.fam
+         
+         13.4.2.2. If you had to remove SNPs after the flip, use original-initials-eur-me-clean-sex-2-1kg-clean-merged.fam
+      
+      13.4.3. Run the PCA: plink --bfile original-initials-eur-me-clean-sex-2-1kg-merged --pca --within original-initials-eur-me-clean-sex-2-fam-populations.txt --pca-clusters populations.txt --out original-initials-eur-me-clean-sex-2-1kg-pca
+         
+         13.4.3.1. If your data had SNPs with 3+ alleles and you did flip+merge steps, use the original-initials-eur-me-clean-sex-2-1kg-second-merged bfiles
+         
+         13.4.3.2. If your data had SNPs with 3+ alleles after flip+merge steps and you did remove+merge steps, then use the original-initials-eur-me-clean-sex-2-1kg-clean-merged bfiles
+         
+         13.4.3.3. If your batch is large and you need to run the PCA on Colossus, copy your PLINK input files into Colossus and use the PCA\_POP.job
+   13.5. Plot PCs
+      
+      13.5.1. The individuals in 1kg.fam file are not ordered according to their population. But in order to assign colors during plotting, we need them to be in order. Thus, we will divide the file containing the PCs into “original-eur” and “1kg” portions, sort the “1kg” portion and combine the two together for plotting. This can be achieved with the following commands:
          sort -k2 original-initials-eur-me-clean-sex-2-1kg-pca.eigenvec > original-initials-eur-me-clean-sex-2-1kg-pca-sorted
          head -n “a” original-initials-eur-me-clean-sex-2-1kg-pca-sorted > original-initials-eur-me-clean-sex-2-1kg-pca-1
          NB the “a” in the “head” command is the number of individuals in the “original” PLINK files that were merged with 1KG (it is the number of individuals in original-initials-eur-me-clean-sex-2-trimmed.fam file)
          tail -n 1083 original-initials-eur-me-clean-sex-2-1kg-pca-sorted | sort -k2 > 1kg-initials-eur-2-pca-1
          NB 1083 is the number of individuals in 1kg.fam
          cat original-initials-eur-me-clean-sex-2-1kg-pca-1 1kg-initials-eur-2-pca-1 > original-initials-eur-me-clean-sex-2-1kg-pca
-      1. Plot your batch with the 1KG dataset.
+      
+      13.5.2. Plot your batch with the 1KG dataset.
          The code for plotting is located in $GITHUB/lib/plot-pca-with-1kg.R. Instructions are in $GITHUB/lib/README.md
-         1. Please remember to use the “plot-PLINK” file in “resources” folder to assign the harmonized tag to the plots of your batch.
+         
+         13.5.2.1. Please remember to use the “plot-PLINK” file in “resources” folder to assign the harmonized tag to the plots of your batch.
             Please specify the “outprefix” as “original-initials-eur-me-clean-sex-2-1kg”.
-         1. When you’ve made the plots, please post them on slack and place a copy in the export folder for  Module II.
-      1. If needed, select a cleaner subsample using the script named “$GITHUB/lib/select-subsamples-on-pca.R”. Please name the customfile as “original-initials-eur-pca-core-select-3-custom.txt” and the “outprefix” as “original-initials-eur-selection-3”.
+         
+         13.5.2.2. When you’ve made the plots, please post them on slack and place a copy in the export folder for  Module II.
+      
+      13.5.3. If needed, select a cleaner subsample using the script named “$GITHUB/lib/select-subsamples-on-pca.R”. Please name the customfile as “original-initials-eur-pca-core-select-3-custom.txt” and the “outprefix” as “original-initials-eur-selection-3”.
          For examples of <customfile> see in $GITHUB/config folder.
-         1. Please note that here we select only EUR subsample (in other words, we tighten the previous selection). Thus, the customfile will have only EUR section. Your customfile may look like this:
+         
+         13.5.3.1. Please note that here we select only EUR subsample (in other words, we tighten the previous selection). Thus, the customfile will have only EUR section. Your customfile may look like this:
             eur\_zoom\_threshold: PC1> -0.01
             eur\_draw\_threshold: PC1>0
             eur\_legend\_position: bottomleft
-         1. In this example, the selection is done based on PC1 only. Please add PC2 and/or other PCs as required.
-      1. Once done, please copy the plots to /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder. 
-      1. Please record the names of the plots in MoBa\_QC\_numbers sheet.
-   1. ### Remove ancestry outliers
-      1. Use the following command to remove PC outliers:
-         plink --bfile original-initials-eur-me-clean-sex-2  --keep original-initials-eur-selection-3-core-subsample-eur.txt --make-bed --out original-initials-eur-3-keep
-      1. Please record the number of individuals kept in MoBa\_QC\_numbers sheet (you can see the number in the log file of the above PLINK command).
-      1. Add the IDs of individuals removed to those who were removed previously:
-         ./match.pl -f original-initials-eur-3-keep.fam -g original-initials-eur-me-clean-sex-2.fam -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $1,$2,”PCA-with-1kg-round-2”}’>> original-initials-eur-2-removed-individuals.txt
-      1. If there are no outliers in this step, then take the original-initials-eur-me-clean-sex-2 biles into step 14.
-1. ## PCA without 1KG
-   1. ### Prune and remove long stretches of LD
-      1. Prune the data
-         1. If there were outliers:
-            plink --bfile original-initials-eur-3-keep --indep-pairwise 3000 1500 0.1 --out original-initials-eur-3-keep-indep
-         1. If there were no outliers in step 13, then run the following command:
-            plink --bfile original-initials-eur-me-clean-sex-2 --indep-pairwise 3000 1500 0.1 --out original-initials-eur-3-keep-indep
-      1. Check the number of remaining SNPs after pruning:
-         wc -l original-initials-eur-3-keep-indep.prune.in
+         
+         13.5.3.2. In this example, the selection is done based on PC1 only. Please add PC2 and/or other PCs as required.
+      
+      13.5.4. Once done, please copy the plots to /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder. 
+      
+      13.5.5. Please record the names of the plots in MoBa\_QC\_numbers sheet.
+   
+   13.6. Remove ancestry outliers
+      
+      13.6.1. Use the following command to remove PC outliers: plink --bfile original-initials-eur-me-clean-sex-2  --keep original-initials-eur-selection-3-core-subsample-eur.txt --make-bed --out original-initials-eur-3-keep
+      
+      13.6.2. Please record the number of individuals kept in MoBa\_QC\_numbers sheet (you can see the number in the log file of the above PLINK command).
+      
+      13.6.3. Add the IDs of individuals removed to those who were removed previously: ./match.pl -f original-initials-eur-3-keep.fam -g original-initials-eur-me-clean-sex-2.fam -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $1,$2,”PCA-with-1kg-round-2”}’>> original-initials-eur-2-removed-individuals.txt
+      
+      13.6.4. If there are no outliers in this step, then take the original-initials-eur-me-clean-sex-2 biles into step 14.
+
+## 14. PCA without 1KG
+   
+   14.1. Prune and remove long stretches of LD
+      
+      14.1.1. Prune the data
+         
+         14.1.1.1. If there were outliers: plink --bfile original-initials-eur-3-keep --indep-pairwise 3000 1500 0.1 --out original-initials-eur-3-keep-indep
+         
+         14.1.1.2. If there were no outliers in step 13, then run the following command: plink --bfile original-initials-eur-me-clean-sex-2 --indep-pairwise 3000 1500 0.1 --out original-initials-eur-3-keep-indep
+      
+      14.1.2. Check the number of remaining SNPs after pruning: wc -l original-initials-eur-3-keep-indep.prune.in
          1. If the number is substantially larger than 100K, repeat the pruning until there are about 100K SNPs left.
       1. Remove long stretches of LD
          plink --bfile original-initials-eur-3-keep --extract original-initials-eur-3-keep-indep.prune.in --make-set high-ld.txt --write-set --out original-initials-eur-3-keep-highld
          plink --bfile original-initials-eur-3-keep --extract original-initials-eur-3-keep-indep.prune.in --exclude original-initials-eur-3-keep-highld.set --make-bed --out original-initials-eur-3-trimmed
       1. Record the number of SNPs in original-initials-eur-3-trimmed.bim
          wc -l original-initials-eur-3-trimmed.bim
-   1. ### PCA
-      1. Copy the populations.txt file from “resources” folder on DATA/DURABLE to your working directory. populations.txt is a text file containing the population, based on which PLINK will calculate the main PCs, in this case it will be just one word “parent”).
-      1. Create original-initials-eur-3-populations.txt – a text file with 3 columns: family ID, individual ID and so-called population, in this case it will be “parent” for unrelated individuals and “child” for related individuals.
-         awk ‘{if($3==0 && $4==0) print $1,$2,”parent”; else print $1,$2,”child”}’ original-initials-eur-3-trimmed.fam > original-initials-eur-3-populations.txt
-      1. Run PCA in PLINK
-         plink --bfile original-initials-eur-3-trimmed --pca --within original-initials-eur-3-populations.txt --pca-clusters populations.txt --out original-initials-eur-3-pca
-         1. If your batch is large and you need to run the PCA on Colossus, copy your PLINK input files into Colossus and use the PCA\_POP.job
-   1. ### Plot PCs
-      1. Identify founders and non-founders
+   14.2. PCA
+      
+      14.2.1. Copy the populations.txt file from “resources” folder on DATA/DURABLE to your working directory. populations.txt is a text file containing the population, based on which PLINK will calculate the main PCs, in this case it will be just one word “parent”).
+      
+      14.2.2. Create original-initials-eur-3-populations.txt – a text file with 3 columns: family ID, individual ID and so-called population, in this case it will be “parent” for unrelated individuals and “child” for related individuals: awk ‘{if($3==0 && $4==0) print $1,$2,”parent”; else print $1,$2,”child”}’ original-initials-eur-3-trimmed.fam > original-initials-eur-3-populations.txt
+      
+      14.2.3. Run PCA in PLINK: plink --bfile original-initials-eur-3-trimmed --pca --within original-initials-eur-3-populations.txt --pca-clusters populations.txt --out original-initials-eur-3-pca
+         
+         14.2.3.1. If your batch is large and you need to run the PCA on Colossus, copy your PLINK input files into Colossus and use the PCA\_POP.job
+   
+   14.3. Plot PCs
+      
+      14.3.1. Identify founders and non-founders
          awk ‘{if($3==0 && $4==0) print $1,$2,”black”; else print $1,$2,”red” }’ original-initials-eur-3-keep.fam > original-initials-eur-3-keep-fam.txt
          ./match.pl -f original-initials-eur-3-keep-fam.txt -g original-initials-eur-3-pca.eigenvec -k 2 -l 2 -v 3 > original-initials-eur-3-keep-pca-fam.txt
-      1. Create PC plots using the plot-batch-PCs.R script. See $GITHUB/lib/README-for-plot-batch-PCs for usage instructions. The input is original-initials-eur-3-keep-pca-fam.txt, title is “original EUR, round 2”, and output is original-initials-eur-3-pca.png.
-      1. Once done, please post the plots on slack, and copy the plots to the /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
-      1. Please record the names of the plots in MoBa\_QC\_numbers sheet.
-   1. ### Remove PC outliers
-      1. Select the individuals to keep (in this example, we select individuals with PC1 value more than zero; please adjust the awk command as needed). Please reach out to Elizabeth if you have any doubts/questions.
+      
+      14.3.2. Create PC plots using the plot-batch-PCs.R script. See $GITHUB/lib/README-for-plot-batch-PCs for usage instructions. The input is original-initials-eur-3-keep-pca-fam.txt, title is “original EUR, round 2”, and output is original-initials-eur-3-pca.png.
+      
+      14.3.3. Once done, please post the plots on slack, and copy the plots to the /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
+      
+      14.3.4. Please record the names of the plots in MoBa\_QC\_numbers sheet.
+   
+   14.4. Remove PC outliers
+      
+      14.4.1. Select the individuals to keep (in this example, we select individuals with PC1 value more than zero; please adjust the awk command as needed). Please reach out to Elizabeth if you have any doubts/questions.
          awk ‘$3>0 {print $1,$2}’ original-initials-eur-3-pca.eigenvec > original-initials-eur-3-pca-keep.txt
-      1. Create PC plots after outlier selection
-         1. Create a file containing the individuals kept with founders and non-founder status, using the same threshold conditions as step 14.4.1.
+      
+      14.4.2. Create PC plots after outlier selection
+         
+         14.4.2.1. Create a file containing the individuals kept with founders and non-founder status, using the same threshold conditions as step 14.4.1.
             awk ‘$3>0 {print $0}’ original-initials-eur-3-keep-pca-fam.txt > original-initials-eur-3-pca-fam-keep.txt
-         1. Run the plot-batch-PCs.R script. See $GITHUB/lib/README-for-plot-batch-PCs for usage instructions. The input is original-initials-eur-3-pca-fam-keep.txt, title is “original EUR, round 2”, and output is original-initials-eur-3-pca-keep.png
-         1. Once done, please post the plots on slack, and copy the plots to the /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
-         1. Please record the names of the plots in MoBa\_QC\_numbers sheet.
-      1. Create PLINK files without the outliers
-         plink --bfile original-initials-eur-3-keep --keep original-initials-eur-3-pca-keep.txt --make-bed --out original-initials-eur-2-round-selection
-      1. Please record the number of individuals kept in MoBa\_QC\_numbers sheet (you can see the number in the log file of the above PLINK command).
-      1. If you had outliers, add their IDs to those who were removed previously:
+         
+         14.4.2.2. Run the plot-batch-PCs.R script. See $GITHUB/lib/README-for-plot-batch-PCs for usage instructions. The input is original-initials-eur-3-pca-fam-keep.txt, title is “original EUR, round 2”, and output is original-initials-eur-3-pca-keep.png
+         
+         14.4.2.3. Once done, please post the plots on slack, and copy the plots to the /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
+         
+         14.4.2.4. Please record the names of the plots in MoBa\_QC\_numbers sheet.
+      
+      14.4.3. Create PLINK files without the outliers: plink --bfile original-initials-eur-3-keep --keep original-initials-eur-3-pca-keep.txt --make-bed --out original-initials-eur-2-round-selection
+      
+      14.4.4. Please record the number of individuals kept in MoBa\_QC\_numbers sheet (you can see the number in the log file of the above PLINK command).
+      
+      14.4.5. If you had outliers, add their IDs to those who were removed previously:
          ./match.pl -f original-initials-eur-2-round-selection.fam -g original-initials-eur-3-keep.fam -k 2 -l 2 -v 1 | awk ‘$7==”-” {print $1,$2,”PCA-without-1kg-round-2”}’>> original-initials-eur-2-removed-individuals.txt
-1. ## Plate effects
+
+## 15. Plate effects
+
 If you had outliers in step 14, use the original-initials-eur-2-round-selection bfiles. If you did not have any outliers use the original-initials-eur-3-keep bfiles.
-1. ### PCA
-   1. Prune the data
-      plink --bfile original-initials-eur-2-round-selection --indep-pairwise 3000 1500 0.1 --out original-initials-eur-2-round-indep
-   1. Remove long stretches of LD and extract the SNPs
-      1. Copy the file containing the list of long LD regions (Build37) from the “resources” folder to your working directory (name of the file is “high-ld.txt”)
-      1. Extract pruned SNPs and Remove long stretches of LD
+
+   15.1. PCA
+   
+      15.1.1. Prune the data: plink --bfile original-initials-eur-2-round-selection --indep-pairwise 3000 1500 0.1 --out original-initials-eur-2-round-indep
+   
+      15.1.2. Remove long stretches of LD and extract the SNPs
+         
+         15.1.2.1. Copy the file containing the list of long LD regions (Build37) from the “resources” folder to your working directory (name of the file is “high-ld.txt”)
+         
+         15.1.2.2. Extract pruned SNPs and Remove long stretches of LD
          plink --bfile original-initials-eur-2-round-selection --extract original-initials-eur-2-round-indep.prune.in --make-set high-ld.txt --write-set --out original-initials-eur-2-round-highld
          plink --bfile original-initials-eur-2-round-selection --extract original-initials-eur-2-round-indep.prune.in --exclude original-initials-eur-2-round-highld.set --make-bed --out original-initials-eur-2-round-trimmed
-   1. Copy the populations.txt file from “resources” folder on DATA/DURABLE to your working directory. populations.txt is a text file containing the population, based on which PLINK will calculate the main PCs, in this case it will be just one word “parent”).
-   1. Run the PCA
-      plink --bfile original-initials-eur-2-round-trimmed --pca --within original-initials-eur-3-populations.txt --pca-clusters populations.txt --out original-initials-eur-2-round-pca
-1. ### Plot PCs by plate
-   1. Copy the plate file relevant to your array from “resources” folder to your working directory: (HCE-plates.txt, GSA-plates.txt, or OMNI-plates.txt). These files contain the information on where each individual’s DNA was plated. Throughout this section the HCE-plates.txt file is used as an example. Please make sure to use update the code to match the array used to genotype your batch.
-   1. Add plate information to a file with PCA results:
+   
+      15.1.3. Copy the populations.txt file from “resources” folder on DATA/DURABLE to your working directory. populations.txt is a text file containing the population, based on which PLINK will calculate the main PCs, in this case it will be just one word “parent”).
+   
+      15.1.4. Run the PCA: plink --bfile original-initials-eur-2-round-trimmed --pca --within original-initials-eur-3-populations.txt --pca-clusters populations.txt --out original-initials-eur-2-round-pca
+   15.2. Plot PCs by plate
+   
+      15.2.1. Copy the plate file relevant to your array from “resources” folder to your working directory: (HCE-plates.txt, GSA-plates.txt, or OMNI-plates.txt). These files contain the information on where each individual’s DNA was plated. Throughout this section the HCE-plates.txt file is used as an example. Please make sure to use update the code to match the array used to genotype your batch.
+   
+      15.2.2. Add plate information to a file with PCA results:
       ./match.pl -f HCE-plates.txt -g original-initials-eur-2-round-pca.eigenvec -k 1 -l 2 -v 3 | awk ‘$23!=”-” {print $0}’ | sort -k23 > original-initials-eur-3-pca-plates.txt
       awk ‘{print $1,$2,$23}’ original-initials-eur-3-pca-plates.txt > original-initials-eur-3-plate-groups.txt
-   1. Create exploratory plots of PCs colored by plate using the plot-PC-by-plate.R script. See $GITHUB/lib/README-for-plot-PC-by-plate for usage instructions. The input is original-initials-eur-3-pca-plates.txt, the title is “original EUR, round 2”, and the output is original-initials-eur-3
+   
+      15.2.3. Create exploratory plots of PCs colored by plate using the plot-PC-by-plate.R script. See $GITHUB/lib/README-for-plot-PC-by-plate for usage instructions. The input is original-initials-eur-3-pca-plates.txt, the title is “original EUR, round 2”, and the output is original-initials-eur-3
       Example: Rscript $GITHUB/lib/plot-PC-by-plate.R m24-tz-eur-3-pca-plates.txt “m24 EUR, round 2” m24-tz-eur
-   1. Once done, please post the plots on slack, and copy the plots to the /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
-   1. Please record the names of the plots in the MoBa\_QC\_numbers sheet.
-1. ### ANOVA
-   1. To perform ANOVA for the first 10PCs and the plates run the anova-for-PC-vs-plates.R script. See $GITHUB/lib/README-for-anova-for-PC-vs-plates for usage instructions. Please specify the input as original-initials-eur-3-pca-plates.txt and the output as original-initials-eur-3-pca-anova-results.txt
-   1. Once done, please post the results on slack. You may use the following command to see the results:
-      more original-initials-eur-3-pca-anova-results.txt
-   1. Please record the p-values in the MoBa\_QC\_numbers sheet.
-1. ### Test for association between the plate and SNPs
-   1. Run a Cochran-Mantel-Haenszel test for association in founders using sex as the phenotype.
-      plink --bfile original-initials-eur-2-round-selection --filter-founders --chr 1-22 --pheno original-initials-eur-2-round-selection.fam --mpheno 3 --within original-initials-eur-3-plate-groups.txt --mh2 --out original-initials-eur-3-mh-plates
-   1. Create QQ plot using the $GITHUB/lib/plot-qqplot.R script for more information see: <https://github.com/norment/moba_qc_imputation/tree/master/lib#plot-qqplotr>. Usage: Rscript plot-qqplot.R inputfile tag pcol outprefix.
+   
+      15.2.4. Once done, please post the plots on slack, and copy the plots to the /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
+   
+      15.2.5. Please record the names of the plots in the MoBa\_QC\_numbers sheet.
+
+   15.3 ANOVA
+   
+      15.3.1. To perform ANOVA for the first 10PCs and the plates run the anova-for-PC-vs-plates.R script. See $GITHUB/lib/README-for-anova-for-PC-vs-plates for usage instructions. Please specify the input as original-initials-eur-3-pca-plates.txt and the output as original-initials-eur-3-pca-anova-results.txt
+   
+      15.3.2. Once done, please post the results on slack. You may use the following command to see the results: more original-initials-eur-3-pca-anova-results.txt
+   
+      15.3.3. Please record the p-values in the MoBa\_QC\_numbers sheet.
+
+   15.4. Test for association between the plate and SNPs
+   
+      15.4.1. Run a Cochran-Mantel-Haenszel test for association in founders using sex as the phenotype: plink --bfile original-initials-eur-2-round-selection --filter-founders --chr 1-22 --pheno original-initials-eur-2-round-selection.fam --mpheno 3 --within original-initials-eur-3-plate-groups.txt --mh2 --out original-initials-eur-3-mh-plates
+      
+      15.4.2. Create QQ plot using the $GITHUB/lib/plot-qqplot.R script for more information see: <https://github.com/norment/moba_qc_imputation/tree/master/lib#plot-qqplotr>. Usage: Rscript plot-qqplot.R inputfile tag pcol outprefix.
       Please use the following arguments: inputfile: original-initials-eur-3-mh-plates.cmh2; tag: use the “plot-PLINK” file in “resources” folder to assign the harmonized tag to the plots of your batch, followed by the core subpopulation, and QC round;  outprefix: original-initials-eur-3-mh-plates-qq-plot.
       Example: Rscript $GITHUB/lib/plot-qqplot.R original-initials-eur-3-mh-plates.cmh2 “PLOT-PLINK tag, population, round 2” 5, original-initials-eur-3-mh-plates-qq-plot
-   1. Once done, please post the plots on slack, and copy the plots to the /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
-   1. Please record the name of the plot in the MoBa\_QC\_numbers sheet.
-   1. Check if there are any significant SNPs at p-value <0.001 threshold
+   
+      15.4.3. Once done, please post the plots on slack, and copy the plots to the /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.
+   
+      15.4.4. Please record the name of the plot in the MoBa\_QC\_numbers sheet.
+      
+      15.4.5. Check if there are any significant SNPs at p-value <0.001 threshold
       sort -k5 -g original-initials-eur-3-mh-plates.cmh2 | grep -v “NA” > original-initials-eur-3-mh2-plates-sorted
       awk ‘$5<0.001 {print $2}’ original-initials-eur-3-mh2-plates-sorted > original-initials-eur-3-mh2-plates-significant
-   1. Record how many SNPs are significant (with p<0.001) and post that number on slack:
-      wc -l original-initials-eur-3-mh2-plates-significant
-   1. Remove the SNPs with significant difference between plates
-      1. If you had no outliers in step 14:
-         plink --bfile original-initials-eur-3-keep --exclude original-initials-eur-3-mh2-plates-significant --make-bed --out original-initials-eur-3-batch
-      1. If you had outliers in step 14:
-         plink --bfile original-initials-eur-2-round-selection --exclude original-initials-eur-3-mh2-plates-significant --make-bed --out original-initials-eur-3-batch
-   1. Add the IDs of SNPs removed here to those that were removed previously:
-      awk ‘{print $1,”plate-effect, round 2”}’ original-initials-eur-3-mh2-plates-significant >> original-initials-eur-2-bad-snps.txt
-1. ### Re-run PCA
-   1. Prune the data
-      plink --bfile original-initials-eur-3-batch --indep-pairwise 3000 1500 0.1 --out original-initials-eur-3-batch-indep
-   1. Remove long stretches of LD and extract the SNPs
+   
+      15.4.6. Record how many SNPs are significant (with p<0.001) and post that number on slack: wc -l original-initials-eur-3-mh2-plates-significant
+      
+      15.4.7. Remove the SNPs with significant difference between plates
+      
+         15.4.7.1. If you had no outliers in step 14: plink --bfile original-initials-eur-3-keep --exclude original-initials-eur-3-mh2-plates-significant --make-bed --out original-initials-eur-3-batch
+      
+         15.4.7.2. If you had outliers in step 14: plink --bfile original-initials-eur-2-round-selection --exclude original-initials-eur-3-mh2-plates-significant --make-bed --out original-initials-eur-3-batch
+   
+      15.4.8. Add the IDs of SNPs removed here to those that were removed previously: awk ‘{print $1,”plate-effect, round 2”}’ original-initials-eur-3-mh2-plates-significant >> original-initials-eur-2-bad-snps.txt
+
+   15.5. Re-run PCA
+   
+      15.5.1. Prune the data: plink --bfile original-initials-eur-3-batch --indep-pairwise 3000 1500 0.1 --out original-initials-eur-3-batch-indep
+      
+      15.5.2. Remove long stretches of LD and extract the SNPs
       plink --bfile original-initials-eur-3-batch --extract original-initials-eur-3-batch-indep.prune.in --make-set high-ld.txt --write-set --out original-initials-eur-3-batch-highld
       plink --bfile original-initials-eur-3-batch --extract original-initials-eur-3-batch-indep.prune.in --exclude original-initials-eur-3-batch-highld.set --make-bed --out original-initials-eur-3-batch-trimmed
-   1. Copy the populations.txt file from “resources” folder on DATA/DURABLE to your working directory. populations.txt is a text file containing the population, based on which PLINK will calculate the main PCs, in this case it will be just one word “parent”).
-   1. Run the PCA
-      plink --bfile original-initials-eur-3-batch-trimmed --pca --within original-initials-eur-3-populations.txt --pca-clusters populations.txt --out original-initials-eur-3-batch-pca
-1. ### Re-run ANOVA
-   1. Add plate information to a file with PCA results:
-      ./match.pl -f HCE-plates.txt -g original-initials-eur-3-batch-pca.eigenvec -k 1 -l 2 -v 3 | awk ‘$23!=”-” {print $0}’ | sort -k23 > original-initials-eur-3-batch-pca-plates.txt
-   1. To perform ANOVA for the first 10PCs and the plates run the anova-for-PC-vs-plates.R script. See $GITHUB/lib/README-for-anova-for-PC-vs-plates for usage instructions. Please specify the input as original-initials-eur-3-batch-pca-plates.txt and the output as original-initials-eur-3-batch-pca-anova-results.txt
-   1. Once done, please post the results on slack. You may use the following command to see the results:
-      more original-initials-eur-3-batch-pca-anova-results.txt
-   1. If there are no significant differences, proceed to round three.If you have significant differences, please let Elizabeth know.
+   
+      15.5.3. Copy the populations.txt file from “resources” folder on DATA/DURABLE to your working directory. populations.txt is a text file containing the population, based on which PLINK will calculate the main PCs, in this case it will be just one word “parent”).
+   
+      15.5.4. Run the PCA: plink --bfile original-initials-eur-3-batch-trimmed --pca --within original-initials-eur-3-populations.txt --pca-clusters populations.txt --out original-initials-eur-3-batch-pca
+
+   15.6. Re-run ANOVA
+   
+      15.6.1. Add plate information to a file with PCA results: ./match.pl -f HCE-plates.txt -g original-initials-eur-3-batch-pca.eigenvec -k 1 -l 2 -v 3 | awk ‘$23!=”-” {print $0}’ | sort -k23 > original-initials-eur-3-batch-pca-plates.txt
+      
+      15.6.2. To perform ANOVA for the first 10PCs and the plates run the anova-for-PC-vs-plates.R script. See $GITHUB/lib/README-for-anova-for-PC-vs-plates for usage instructions. Please specify the input as original-initials-eur-3-batch-pca-plates.txt and the output as original-initials-eur-3-batch-pca-anova-results.txt
+   
+      15.6.3. Once done, please post the results on slack. You may use the following command to see the results: more original-initials-eur-3-batch-pca-anova-results.txt
+
+      15.6.4. If there are no significant differences, proceed to round three.If you have significant differences, please let Elizabeth know.
+
 # THIRD ROUND
+
 Please let Elizabeth know on slack when you are entering round two of the QC.
-1. ## Basic QC
-   1. ### Remove sex chromosomes
+
+## 16. Basic QC
+   
+   16.1. Remove sex chromosomes
       1. Run the following command to remove variants with MAF <0.5% and sex chromosomes:
          plink --bfile original-initials-eur-3-batch --chr 1-22 --make-bed --out original-initials-eur-round-3
       1. Record the number of SNPs removed.
@@ -1723,5 +1814,3 @@ If you had outliers in step 22, use the original-initials-eur-3-round-selection 
    1. To perform ANOVA for the first 10PCs and the plates run the anova-for-PC-vs-plates.R script. See $GITHUB/lib/README-for-anova-for-PC-vs-plates for usage instructions. Please specify the input as original-initials-eur-4-batch-pca-plates.txt and the output as original-initials-eur-4-batch-pca-anova-results.txt
    1. Once done, please post the results on slack. You may use the following command to see the results:
       more original-initials-eur-4-batch-pca-anova-results.txt
-
-100
