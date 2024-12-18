@@ -1,6 +1,6 @@
-﻿Module 1. Identify core samples
+﻿Module 1. Classify MoBa individuals against 1000 Genomes ancestral populations
 
-The steps in the “Identify core samples” are intended to be executed on each genotype batch after Module 0 has been completed. In this module we identify the core sub-populations (EUR, AFR, ASIAN) in each batch using principal component analysis. For each population, the set of “core samples” is ancestry-matched subset of individuals, with genotypes passing basic QC (i.e. call rated above 95%). Core samples include both parents and offsprings (i.e. not just founders). Of note, EUR population also includes FIN.
+The steps in the “Classify MoBa individuals against 1000 Genomes ancestral populations” are intended to be executed on each genotype batch after Module 0 has been completed. In this module we identify the core sub-populations (EUR, AFR, ASIAN) in each batch using principal component analysis. For each population, the set of “core samples” is ancestry-matched subset of individuals, with genotypes passing basic QC (i.e. call rated above 95%). Core samples include both parents and offsprings (i.e. not just founders). Of note, EUR population also includes FIN.
 # Quality Control (QC) steps
 Load PLINK module
 
