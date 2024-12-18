@@ -1,0 +1,77 @@
+#!/bin/bash
+#BATCH --job-name=YHAPLO
+#SBATCH --account=p697_norment_dev
+#SBATCH --time=1:00:00
+#SBATCH --ntasks=1
+#SBATCH --mem-per-cpu=7600M
+#SBATCH --cpus-per-task=7
+#SBATCH --array=24
+
+source /cluster/bin/jobsetup
+
+set -o errexit
+
+module load singularity/3.7.1
+module load bcftools/1.8
+
+export SINGULARITY_BIND=""/ess/p697/data/durable/s3-api:/ess/p697/data/durable/s3-api""
+export SIF=/ess/p697/data/durable/s3-api/github/comorment/containers/singularity
+export PLINK="singularity exec --home $PWD:/home $SIF/gwas.sif plink"            # PLINK v1.90b6.18 64-bit (16 Jun 2020)
+export PLINK2="singularity exec --home $PWD:/home $SIF/gwas.sif plink2"          # PLINK v2.00a2.3LM 64-bit Intel (24 Jan 2020)
+export PYTHON="singularity exec --home $PWD:/home $SIF/python3.sif python"       # Python 3.8.10
+export YHAPLO="singularity exec --home $PWD:/home /ess/p697/data/durable/projects/moba_qc_imputation/TF/chrY/software/chry.sif yhaplo"       # Python 3.8.10
+
+export prefix=chr${SLURM_ARRAY_TASK_ID}
+
+input_prefix="$prefix.imputed.info0p8" # Prefix for the initial BED/BIM/FAM files
+output_prefix="$prefix.imputed.info0p8.updated" # Intermediate output prefix
+export lifted_output_prefix="$prefix.imputed.info0p8.lifted" # Final output prefix after liftover
+chain_file="/ess/p697/data/durable/projects/moba_qc_imputation/software/hg38ToHg19.over.chain.gz" # Path to the chain file
+liftOver="/ess/p697/data/durable/projects/moba_qc_imputation/software/liftOver"
+# Step 1: Convert binary files to .ped and .map
+echo -e '\nliftOver convert to ped\n'
+$PLINK --bfile $input_prefix --recode --out $output_prefix
+
+awk -F='\t' -OFS='\t' '{sub("24","Y",$1);print}' ${output_prefix}.map > ${output_prefix}.map-i && mv ${output_prefix}.map-i ${output_prefix}.map
+
+# Step 2: Prepare the .map file for LiftOver
+awk '{print "chr"$1"\t"$4-1"\t"$4"\t"$2}' ${output_prefix}.map > ${output_prefix}_for_liftover.txt
+
+# Step 3: Run LiftOver
+echo -e '\nsliftOver\n'
+$liftOver ${output_prefix}_for_liftover.txt $chain_file ${output_prefix}_converted.txt ${output_prefix}_unmapped.txt
+# Step 4: Update the MAP file with new positions
+awk 'BEGIN{OFS="\t"} FNR==NR{a[$4]=$2; next} ($2 in a){$4=a[$2]+1}1' ${output_prefix}_converted.txt ${output_prefix}.map > ${lifted_output_prefix}.map
+
+# Step 5: Convert back to binary format using the updated map file and the original ped file
+echo -e '\nliftOver convert back\n'
+$PLINK --file $output_prefix --map ${lifted_output_prefix}.map --make-bed --out $lifted_output_prefix
+
+
+echo -e '\nconvert to VCF\n'
+sed -i 's/_/~/g' "$lifted_output_prefix.fam"
+$PLINK --bfile $lifted_output_prefix --recode vcf --out $lifted_output_prefix
+
+
+echo -e '\ndipl2hapl.py\n'
+
+$PYTHON dipl2hapl.py "$lifted_output_prefix.vcf" "$lifted_output_prefix.hapl.vcf"
+
+bgzip -c "$lifted_output_prefix.hapl.vcf" > "$lifted_output_prefix.hapl.vcf.gz"
+
+echo -e '\nindex\n'
+tabix -f -p vcf "$lifted_output_prefix.hapl.vcf.gz"
+
+echo -e '\nyhaplo\n'
+
+$YHAPLO --input "$lifted_output_prefix.hapl.vcf.gz" --all_aux_output --out_dir yhaplo_out
+
+
+#Convert to original fid iids
+awk 'BEGIN {OFS="\t"} {
+    split($1, a, "_");
+    $1 = a[1];
+    print a[1], a[2], $2, $3, $4
+}' "yhaplo_out/haplogroups.$lifted_output_prefix.hapl.txt" > $prefix.haplogroups
+
+sed -i 's/~/_/g' $prefix.haplogroups

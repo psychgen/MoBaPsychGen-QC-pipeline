@@ -1,0 +1,33 @@
+#!/bin/bash
+#SBATCH --job-name=impt2_24
+#SBATCH --account=p697_norment
+#SBATCH --time=96:00:00
+#SBATCH --ntasks=1
+#SBATCH --mem-per-cpu=32000M
+#SBATCH --cpus-per-task=1
+#SBATCH --array=1-19
+source /cluster/bin/jobsetup
+# If you have other way of running PLINK2 and python software feel free to replace the set of commands below
+module load singularity/3.7.1
+module load Java/11.0.2
+module load BCFtools/1.9-foss-2018b
+export COMORMENT=/ess/p697/data/durable/s3-api/github/comorment
+export SINGULARITY_BIND=""$COMORMENT/containers/reference:/REF:ro,/cluster/projects/p697:/cluster/projects/p697""
+export SIF=$COMORMENT/containers/singularity
+export PLINK="singularity exec --home $PWD:/home $SIF/gwas.sif plink"
+export PLINK2="singularity exec --home $PWD:/home $SIF/gwas.sif plink2"
+export PYTHON="singularity exec --home $PWD:/home $SIF/python3.sif python"
+export IMPUTE2="/ess/p697/data/durable/projects/moba_qc_imputation/software/impute_v2.3.2_x86_64_static/impute2"
+export QCTOOL="singularity exec -B $PWD:$PWD /ess/p697/data/durable/projects/moba_qc_imputation/software/qctool_v2.2.0.sif qctool"
+export ICHUNK="03"
+
+set -o errexit
+declare -A CHUNKS=([1]="2000001 5000000" [2]="5000001 8000000" [3]="8000001 11000000" [4]="11000001 14000000" [5]="14000001 17000000" [6]="17000001 20000000" [7]="20000001 23000000" [8]="23000001 26000000" [9]="26000001 29000000" [10]="29000001 32000000" [11]="32000001 35000000" [12]="35000001 38000000" [13]="38000001 41000000" [14]="41000001 44000000" [15]="44000001 47000000" [16]="47000001 50000000" [17]="50000001 53000000" [18]="53000001 56000000" [19]="56000001 59000000")
+
+$IMPUTE2 -chrX -m /ess/p697/data/durable/projects/moba_qc_imputation/TF/chrY/reference/sites/gnomad_ymap.txt \
+-h /ess/p697/data/durable/projects/moba_qc_imputation/TF/chrY/reference/calls/gnomad.genomes.v3.1.2.hgdp_tgp.filtered.chrY.hap.gz \
+-l /ess/p697/data/durable/projects/moba_qc_imputation/TF/chrY/reference/calls/gnomad.genomes.v3.1.2.hgdp_tgp.filtered.chrY.legend.gz \
+-g chr24.ichunk_$ICHUNK.qced.gen \
+-sample_g chr24.ichunk_$ICHUNK.qced.sample \
+-int ${CHUNKS[${SLURM_ARRAY_TASK_ID}]} -Ne 20000 -o chr24.impute2.ichunk$ICHUNK.chunk${SLURM_ARRAY_TASK_ID} -iter 2 -burnin 1 -k_hap 500 -buffer 1000
+

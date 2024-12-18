@@ -1,0 +1,40 @@
+#!/bin/bash
+#SBATCH --job-name=MERGE
+#SBATCH --account=p697_tsd
+#SBATCH --time=4:00:00
+#SBATCH --ntasks=1
+#SBATCH --mem-per-cpu=16000M
+#SBATCH --cpus-per-task=1
+#SBATCH --array=24
+source /cluster/bin/jobsetup
+module load singularity/3.7.1
+
+export COMORMENT=/ess/p697/data/durable/s3-api/github/comorment
+export SINGULARITY_BIND=""$COMORMENT/containers/reference:/REF:ro,/cluster/projects/p697:/cluster/projects/p697,/ess/p697/data/durable/projects/moba_qc_imputation/TF/chrY/reference/:/ess/p697/data/durable/projects/moba_qc_imputation/TF/chrY/reference/""
+export SIF=$COMORMENT/containers/singularity
+export PLINK="singularity exec --home $PWD:/home $SIF/gwas.sif plink"
+export PYTHON="singularity exec --home $PWD:/home $SIF/python3.sif python"
+export PLINK2="singularity exec --home $PWD:/home $SIF/gwas.sif plink2"
+
+chromosome=$SLURM_ARRAY_TASK_ID
+PREFIX=chr$chromosome
+# List all .bgen files for the specified chromosome
+bgen_files=$(ls chr${chromosome}.imputed.chunk*.bgen)
+
+# Concatenate the .bgen files using cat-bgen
+/cluster/projects/p697/projects/moba_qc_imputation/software/cat-bgen -g $bgen_files -og chr${chromosome}.imputed.bgen -clobber
+
+$PLINK2 --bgen $PREFIX.imputed.bgen ref-unknown --sample $PREFIX.imputed.chunk1.sample --oxford-single-chr $chromosome --make-bed --out $PREFIX.imputed --memory 8000 --hard-call-threshold 0.49
+
+$PYTHON concat_info_scores.py $chromosome chr$chromosome
+
+fam_files=$(ls chr${chromosome}.ichunk_*.qced.fam | sort -V)
+touch chr@.ichunk_merged.fam
+rm chr@.ichunk_merged.fam
+for fam_file in $fam_files; do
+  cat $fam_file >> chr@.ichunk_merged.fam
+done
+echo "adasdas"
+$PLINK2 --bfile ${PREFIX}.imputed          --out ${PREFIX}.imputed.info0p8         --extract ${PREFIX}.imputed.bim.info0p8.snps --make-bed --memory 8000 --fam chr@.ichunk_merged.fam
+$PLINK2 --bfile ${PREFIX}.imputed          --out ${PREFIX}.imputed.info0p9         --extract ${PREFIX}.imputed.bim.info0p9.snps --make-bed --memory 8000 --fam chr@.ichunk_merged.fam
+$PLINK2 --bfile ${PREFIX}.imputed.info0p8  --out ${PREFIX}.imputed.info0p8.maf0p01 --maf 0.01                                   --make-bed --memory 8000
