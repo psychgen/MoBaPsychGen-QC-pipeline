@@ -144,22 +144,6 @@ This script plots heterozygosity rate (HET_RATE) vs. number of missing snps per 
 Rscript plot-heterozygosity-common.R m24-ca-eur-common "M24 EUR"
 ```
 
-### plot-heterozygosity-rare.R
-
-**Function**
-This script plots heterozygosity rate (HET_RATE) vs. number of missing snps per individual and histograms of inbreeding coefficients (F) based on the rare variants, marks the mean HET_RATE +/-3 SD and F +/- 0.2 of the sample, and generates the list of outliers outside F +/- 0.2.
-
-**Usage** ``Rscript plot-heterozygosity-rare.R dataprefix tag``
-
-**Arguments**
-  * `dataprefix` - prefix of the heterozygosity/missingness data files
-  * `tag` - a tag of data shown in the titles of the plots
-
-**Example**
-```
-Rscript plot-heterozygosity-rare.R m24-ca-eur-rare  "M24 EUR"
-```
-
 ### plot-ibd.R
 
 **Function**
