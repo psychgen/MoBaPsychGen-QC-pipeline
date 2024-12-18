@@ -20,7 +20,7 @@
 * [anova-for-PC-vs-plates.R](#anova-for-PC-vs-plates)
 * [plot-PC-by-plate.R](#plot-PC-by-plate)
 
-## Summary of scripts
+## Summary of R scripts
 
 ### plot-pca-with-1kg.R
 
