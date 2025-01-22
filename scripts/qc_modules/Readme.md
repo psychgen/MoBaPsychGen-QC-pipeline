@@ -1,10 +1,10 @@
 ## Contents
 
-* [qc_m1.sh](#qc_m1.sh)
-* [qc_m2.sh](#qc_m2.sh)
-* [qc_chrX.sh](#qc_chrX.sh)
-* [PRE_PHASING_QC.job](#PRE_PHASING_QC.job)
-* [pre_phasing_qc_report.py](#pre_phasing_qc_report.py)
+* [qc_m1.sh](#qc_m1sh)
+* [qc_m2.sh](#qc_m2sh)
+* [qc_chrX.sh](#qc_chrxsh)
+* [PRE_PHASING_QC.job](#pre_phasing_qcjob)
+* [pre_phasing_qc_report.py](#pre_phasing_qc_reportpy)
 
 ## Summary of scripts
 
