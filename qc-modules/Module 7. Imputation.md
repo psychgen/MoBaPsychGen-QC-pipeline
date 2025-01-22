@@ -1,10 +1,6 @@
-﻿Module 5, 6, and 7: Pre-phasing QC, phasing, and imputation
+﻿Module 7: Imputation
 
-This document describes steps to perform modules 5, 6, and 7 from the flow-chart, which performs the following steps:
-
-1. Pre-phasing QC
-1. Pre-phasing QC report
-1. Phasing
+This document describes the following steps:
 1. Imputation 
 1. Merging imputation chunks across individuals
 1. Compute per-SNP imputation INFO scores
