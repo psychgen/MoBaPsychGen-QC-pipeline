@@ -1,9 +1,9 @@
 ## Contents
 
-* [qc_m1.sh](#qc_m1)
-* [qc_m2.sh](#qc_m2)
-* [qc_chrX.sh](#qc_chrX)
-* [phasing and imputation scripts](#phasing_imputaiton)
+* [qc_m1](#qc_m1.sh)
+* [qc_m2](#qc_m2.sh)
+* [qc_chrX](#qc_chrX.sh)
+* [phasing and imputation scripts](#phasing_imputation)
 
 ## Summary of scripts
 
