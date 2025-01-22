@@ -1,16 +1,16 @@
 # ﻿Module 3. Merge by genotyping array
 
-The steps in &quot;module 3&quot; are intended to be executed on each genotyping batch separately for each ancestry population, before the batches are merged in &quot;module 4&quot; .
+The steps in &quot;module 3&quot; are intended to be executed on each genotyping batch separately for each ancestry population. The batches with  before the batches are merged.
 
 ## Quality Control (QC) steps
 Load PLINK module
-Follow the same setup as described in module 1 step-by-step document , e.g. set **GITHUB=/cluster/projects/p697/github/norment/moba\_qc\_imputation** if you work on machine with /cluster access (e.g. p697-submit), or **GITHUB=/tsd/p697/data/durable/s3-api/github/norment/moba\_qc\_imputation** if you work on a machine without /cluster access.
+Follow the same setup as described in module 1 step-by-step document , e.g. set **GITHUB=/cluster/projects/p697/github/norment/moba_qc_imputation** if you work on machine with /cluster access (e.g. p697-submit), or **GITHUB=/tsd/p697/data/durable/s3-api/github/norment/moba_qc_imputation** if you work on a machine without /cluster access.
 
-Unless otherwise specified, all commands are supposed to be run in your working directory (named with your initials) in DATA/DURABLE (see folder-structure-moba-2020.pdf). All plots produced in this module should be copied to /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_III\_Plots folder when indicated. “Record” in the instructions below refers to recording the numbers in MoBa\_QC\_numbers spreadsheet on Google drive, when indicated. Please contact Elizabeth if you have any questions about the process.
+Unless otherwise specified, all commands are supposed to be run in your working directory (named with your initials) in DATA/DURABLE (see folder-structure-moba-2020.pdf). All plots produced in this module should be copied to /tsd/p697/data/durable/projects/moba_qc_imputation/export/Module_III_Plots folder when indicated. “Record” in the instructions below refers to recording the numbers in MoBa\_QC\_numbers spreadsheet on Google drive, when indicated. Please contact Elizabeth if you have any questions about the process.
 
 ## 1. Create a working directory for running the merge and QC
       
-   1.1 Create a working directory for running module 3 and 4: Example: mkdir /tsd/p697/data/durable/projects/moba\_qc\_imputation/EC/release3
+   1.1 Create a working directory for running module 3 and 4: Example: mkdir /tsd/p697/data/durable/projects/moba_qc_imputation/EC/release3
    
    1.2 Copy the original-initials-eur-4-batch PLINK bfiles for the relevant batches to your working directory
    
