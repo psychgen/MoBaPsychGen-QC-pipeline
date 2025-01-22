@@ -1,10 +1,10 @@
-# MoBaPsychGen QC pipeline code and documentation 
+# MoBaPsychGen QC pipeline code and documentation repository for manuscript entitled “Unique opportunities to study health and behavior in genotyped family cohorts”
 
 ## Overview
 
-This repository is home to documentation and code for the MoBaPsychGen QC pipeline. This pipeline was developed for and applied to genotype data from the Norwegian Mother, Father, and Child Cohort study (MoBa), a process described in this paper: The Norwegian Mother, Father, and Child cohort study (MoBa) genotyping data resource: MoBaPsychGen pipeline v.1 (https://doi.org/10.1101/2022.06.23.496289).
+This repository is home to documentation and code for the MoBaPsychGen QC pipeline. This pipeline was developed for and applied to genotype data from the Norwegian Mother, Father, and Child Cohort study (MoBa). The pipeline is described in the preprint: [https://doi.org/10.1101/2022.06.23.496289](The Norwegian Mother, Father, and Child cohort study (MoBa) genotyping data resource: MoBaPsychGen pipeline v.1) and manuscript entitled “Unique opportunities to study health and behavior in genotyped family cohorts”.
 
-This is the reference that should be cited by work based on either the data, procedures, or code from the MoBaPsychGen QC pipeline. 
+This latest reference should be cited by work based on either the data, procedures, or code from the MoBaPsychGen QC pipeline. 
 
 ## Structure
 
