@@ -6,6 +6,7 @@
 * [PRE_PHASING_QC.job](#pre_phasing_qcjob)
 * [pre_phasing_qc_report.py](#pre_phasing_qc_reportpy)
 * [make_hrc_format_conversion_scripts.py](#make_hrc_format_conversion_scriptspy)
+* [make_jobs.py](#make_jobspy)
 
 ## Summary of scripts
 
@@ -27,5 +28,7 @@ Generagtes a report describing how many SNPs were excluded during pre-phasing QC
 ### make_hrc_format_conversion_scripts.py
 Converts original publically available HRC reference panel files to a format compatible with shapeit2.
 
+### make_jobs.py
+Generate phasing job files and defines chunks of individulas for imputation.
 
 
