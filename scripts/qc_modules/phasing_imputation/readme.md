@@ -8,7 +8,7 @@
 ### PRE_PHASING_QC.job
 
 **Function**
-Contains the pre-phasing QC steps.
+Contains the pre-phasing QC steps. The input to this script is one “bfile” in plink format (.bed/.bim/.fam), with approximately 400K-800K genetic variants.
 
 ### pre_phasing_qc_report.py
 
