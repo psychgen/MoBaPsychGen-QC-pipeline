@@ -11,7 +11,8 @@ Whole chromosome phasing including the publically available HRC as the reference
 Note how many chunks of individuals `ichunks` were generated. This could be confusing: phasing is going to be executed without forming chunks of individuals, but the result of phasing is then split into chunks using the `shapeit2 --convert` command.
 2. Generate phasing job files using the following command ``python make_jobs.py shapeit2 --prefix chr@ --hours 168 --num-ichunks <N>``
 3. Submit the phasing job for each chromosome run on the HPC using the following command ``sbatch shapeit2_chrNN.job``. The `NN` is updated to the chromosome number. The jobs will take between 1 and 3 days to finish (for a N=30K batch). Alternatively if submitting all autosome phasing jobs at once the following commands can be used:
-```for ((NN=1; NN<=22; NN++)); do
+```
+for ((NN=1; NN<=22; NN++)); do
 sbatch shapeit2_chr${NN}.job  
 done
 ```
