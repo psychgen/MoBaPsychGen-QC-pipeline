@@ -1,0 +1,66 @@
+#!/bin/bash
+#SBATCH --job-name=prephase
+#SBATCH --account=p697
+#SBATCH --time=1:00:00
+#SBATCH --ntasks=1
+#SBATCH --mem-per-cpu=7600M
+#SBATCH --cpus-per-task=7
+#SBATCH --array=1-22
+
+source /cluster/bin/jobsetup
+
+set -o errexit
+
+module load singularity/3.7.1
+export SINGULARITY_BIND=""/cluster/projects/p697:/cluster/projects/p697""
+export SIF=/cluster/projects/p697/github/comorment/containers/singularity
+export PLINK="singularity exec --home $PWD:/home $SIF/gwas.sif plink"            # PLINK v1.90b6.18 64-bit (16 Jun 2020)
+export PLINK2="singularity exec --home $PWD:/home $SIF/gwas.sif plink2"          # PLINK v2.00a2.3LM 64-bit Intel (24 Jan 2020)
+export PYTHON="singularity exec --home $PWD:/home $SIF/python3.sif python"       # Python 3.8.10
+
+# NB! change this to point to your files
+export input=release4-as-eur-fin-pass-qc
+
+export prefix=chr${SLURM_ARRAY_TASK_ID}
+export hrc_sites_file=/cluster/projects/p697/projects/moba_qc_imputation/resources/HRC/HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz
+export HRC_1000G_check_bim=/cluster/projects/p697/github/norment/moba_qc_imputation/software/HRC-1000G-check-bim.pl
+
+# Step 1a (exclude duplicated), 1b (exclude indels and non-ACTG alleles), 1c (exclude ambiguous SNPs)
+$PLINK --bfile $input --chr ${SLURM_ARRAY_TASK_ID} --out $prefix.step0 --make-bed || true
+$PLINK --bfile $prefix.step0 --list-duplicate-vars ids-only suppress-first --out $prefix.step1a || true
+$PLINK --bfile $prefix.step0 --exclude $prefix.step1a.dupvar --make-bed --out $prefix.step1a || true
+$PLINK --bfile $prefix.step1a --snps-only just-acgt --make-bed --out $prefix.step1b || true
+
+awk '{ if (($5=="T" && $6=="A")||($5=="A" && $6=="T")||($5=="C" && $6=="G")||($5=="G" && $6=="C")) print $2, "ambig" ; else print $2 ;}' $prefix.step1b.bim | grep ambig > $prefix.step1b.snplist.txt  || true
+$PLINK --bfile $prefix.step1b --exclude $prefix.step1b.snplist.txt --make-bed --out $prefix.step1c || true
+
+# Step 2. Zero out Mendelian errors
+$PLINK --bfile $prefix.step1c --me 1 1 --set-me-missing --make-bed --out $prefix.step2 || true
+
+# Step 3. Missingness and HWE + Step 4. Compute allele frequencies
+# NB! --mind 0.02 filter is removed from the next command, to avoid sample QC per chunk, which may leave inconsistent number of individuals available per chunk.
+$PLINK --bfile $prefix.step2 --hwe 1e-6 --geno 0.02 --make-bed --out $prefix.step3 || true
+$PLINK --bfile $prefix.step3 --freq --make-bed --out $prefix.step4  || true
+
+# Step 4-10. Run Oxford perl script and apply first 5 lines of it's Run-plink.sh command, followed by '--update-name' command (update marker names)
+perl ${HRC_1000G_check_bim} -b $prefix.step4.bim -f $prefix.step4.frq -r ${hrc_sites_file} -h  || true
+$PLINK --bfile $prefix.step4 --exclude Exclude-$prefix.step4-HRC.txt --make-bed --out $prefix.step5  || true
+$PLINK --bfile $prefix.step5 --update-chr Chromosome-$prefix.step4-HRC.txt  --make-bed --out $prefix.step6 || true
+$PLINK --bfile $prefix.step6 --update-map Position-$prefix.step4-HRC.txt --make-bed --out $prefix.step7  || true
+$PLINK --bfile $prefix.step7 --flip Strand-Flip-$prefix.step4-HRC.txt --make-bed --out $prefix.step8 || true
+$PLINK --bfile $prefix.step8 --a1-allele Force-Allele1-$prefix.step4-HRC.txt --make-bed --out $prefix.step9  || true
+
+# Note --real-ref-alleles flag in all commands below. From this point it's important to respect A1/A2 allele - impute5 is sensitive to this.
+$PLINK --bfile $prefix.step9 --update-name ID-$prefix.step4-HRC.txt --real-ref-alleles --make-bed --out $prefix.step10  || true
+
+# Exclude duplicates one more time (could be introduced by Oxford script)
+$PLINK2 --bfile $prefix.step10 --rm-dup force-first --make-bed --out $prefix || true
+
+$PLINK --bfile $prefix --indep-pairwise 3000 1500 0.01 --out $prefix.indep
+$PLINK --bfile $prefix --extract $prefix.indep.prune.in --make-bed --real-ref-alleles --out $prefix.test
+$PLINK --bfile $prefix --extract $prefix.indep.prune.out --make-bed --real-ref-alleles --out $prefix.train
+
+cat $prefix.test.bim | $PYTHON rename_all_snps.py ${SLURM_ARRAY_TASK_ID} > $prefix.test.rename_snps.bim
+cp $prefix.test.fam $prefix.test.rename_snps.fam
+cp $prefix.test.bed $prefix.test.rename_snps.bed
+awk '{ print $2 }' $prefix.test.rename_snps.bim > $prefix.test.rename_snps.snps
