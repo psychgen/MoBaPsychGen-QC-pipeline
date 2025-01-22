@@ -11,13 +11,13 @@
 * [create-liftover-input.R](#create-liftover-inputr)
 * [merge-relatedness-rt.R](#merge-relatedness-rtr)
 * [create-relplot.sh](#create-relplotsh)
-* [select-subsamples-on-pca-without1kg.R](#select-subsamples-on-pca-without1kg)
-* [plot-sex.R](#plot-sex)
-* [plot-kinship-histogram.R](#plot-kinship-histogram)
-* [cryptic-plot.R](#cryptic-plot)
-* [plot-batch-PCs.R](#plot-batch-PCs)
-* [anova-for-PC-vs-plates.R](#anova-for-PC-vs-plates)
-* [plot-PC-by-plate.R](#plot-PC-by-plate)
+* [select-subsamples-on-pca-without1kg.R](#select-subsamples-on-pca-without1kgr)
+* [plot-sex.R](#plot-sexr)
+* [plot-kinship-histogram.R](#plot-kinship-histogramr)
+* [cryptic-plot.R](#cryptic-plotr)
+* [plot-batch-PCs.R](#plot-batch-PCsr)
+* [anova-for-PC-vs-plates.R](#anova-for-PC-vs-platesr)
+* [plot-PC-by-plate.R](#plot-PC-by-plater)
 
 ## Summary of R scripts
 
