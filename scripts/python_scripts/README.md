@@ -2,8 +2,8 @@
 This subdirectory contains python scripts that can be used to select samples using from PC plots.
 These were the original scripts used during the QC and have since been replaced with Rscripts. We are including the scripts in the reposatory in case they are referenced in the qc-modules. 
 
-* [select_samples.py](#select_samples)
-* [ellipseselect.py](#ellipseselect)
+* [select_samples.py](#select_samplespy)
+* [ellipseselect.py](#ellipseselectpy)
 
 ## Summary of scripts
 
