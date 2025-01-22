@@ -1,6 +1,6 @@
 # ﻿Module 3. Merge by genotyping array
 
-The steps in &quot;module 3&quot; are intended to be executed on each genotyping batch separately for each ancestry population. The batches with  before the batches are merged.
+The steps in &quot;module 3&quot; are intended to be executed on each genotyping batch separately for each ancestry population. The genotyping batches with are then merged by genotyping array.
 
 ## Quality Control (QC) steps
 Load PLINK module
