@@ -1,3 +1,11 @@
+## Contents
+
+* [qc_m1.sh](#qc_m1)
+* [qc_m2.sh](#qc_m2)
+* [qc_chrX.sh](#qc_chrX)
+* [PRE_PHASING_QC.job](#Pre-Phasing_QC)
+* [pre_phasing_qc_report.py](#Pre-phasing_report)
+
 ## Summary of scripts
 
 ### qc_m1.sh
@@ -9,5 +17,8 @@ This script performs module 0 and 1 of the QC pipeline.
 ### qc_chrX.sh
 This script performs the chromosome X module of the QC pipeline.
 
-### phasing_imputation
-All scripts used to perform the pre-phasing check, phasing, and imputation.
+### PRE_PHASING_QC.job
+Contains the pre-phasing QC steps. The input to this script is one “bfile” in plink format (.bed/.bim/.fam), with approximately 400K-800K genetic variants.
+
+### pre_phasing_qc_report.py
+Generagtes a report describing how many SNPs were excluded during pre-phasing QC and why they were removed. Additionally the number of SNPs with updated IDs and strand flips, ect. is described.
