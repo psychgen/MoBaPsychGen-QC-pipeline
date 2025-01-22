@@ -16,3 +16,5 @@ for ((NN=1; NN<=22; NN++)); do
 sbatch shapeit2_chr${NN}.job  
 done
 ```
+
+NOTE: The chunks of individuals `ichunks` have individuals re-shuffled to guarantee that families were not split across imputation chunks. A new chr@.ichunk_merged.fam file was generated at step 2 listing the new order of individuals.
