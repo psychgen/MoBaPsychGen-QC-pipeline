@@ -11,7 +11,7 @@
 ## Summary of scripts
 
 ### qc_m1.sh
-This script performs module 0 and 1 of the QC pipeline.
+This script performs module 1 of the QC pipeline.
 
 ### qc_m2.sh
 This script performs module 0 and 1 of the QC pipeline.
