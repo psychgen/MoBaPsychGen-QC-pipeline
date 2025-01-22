@@ -7,11 +7,11 @@ These were the original scripts used during the QC and have since been replaced 
 
 ## Summary of scripts
 
-### `select_samples.py` script to select core subsamples
+### select_samples.py
+script to select core subsamples
 #### Requirements:
 1. Python 3.6+
 2. Libraries: matplotlib, pandas
-
 
 #### Running on TSD Windows Desktop
 The script should work right away with preinstalled Anaconda.
@@ -52,7 +52,6 @@ GUI should start.
 ```
 > python select_samples.py --help
 ```
-
 #### Running on TSD Linux desktop
 
 ##### Setup of the environment before the first usage and test run
@@ -125,7 +124,8 @@ $ source $HOME/py37/bin/activate
 ```
 The script is ready to use. 
 
-### `ellipseselect.py`: new script to select core subsamples
+### ellipseselect.py
+Script to select core subsamples
 The script aims to replace old `select_samples.py` script. It is similar to the old script but uses another (more suitable) library for interactive plotting making the program more responsive and easier to maintain.
 
 #### Prepare environment
