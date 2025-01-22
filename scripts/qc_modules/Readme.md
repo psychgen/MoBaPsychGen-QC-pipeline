@@ -3,6 +3,7 @@
 * [qc_m1.sh](#qc_m1)
 * [qc_m2.sh](#qc_m2)
 * [qc_chrX.sh](#qc_chrX)
+* [phasing_imputation](#phasing and imputaiton scripts)
 
 ## Summary of scripts
 
