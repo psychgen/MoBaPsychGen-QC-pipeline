@@ -8,8 +8,9 @@ The pipeline is described in the [preprint](https://doi.org/10.1101/2022.06.23.4
 
 ## Structure
 
-* [qc-modules](qc-modules) - Documents with listing QC steps of each module.
-* [scripts](scripts) - Scripts used throughout the QC pipeline.
+* [qc-scripts](qc-scripts) - various tools and scripts used throughout the QC part of the pipeline (modules 0-4)
+* [imputation-scripts](imputation-scripts) - tools, scripts and SLURM jobs used for phasing and imputation (modules 5-7)
+* [pipeline-modules](pipeline-modules) - documentation of specific steps in each module of the QC and imputation pipeline.
 
 Analytic code for the exemplar trio analyses are available [here](https://github.com/psychgen/moba-trio-analyses).
 
@@ -33,4 +34,19 @@ python 3.8.10
 perl v5.32.1
 
 gwas.sif, python3.sif, R.sif containers from v1.0.0 release of https://github.com/comorment/containers
+```
+
+## Folder structure
+
+This software was re-organized into a cleaner folder structure.
+As older scripts may refer to obsolete location of the files, here is an overview of how files were relocated:
+
+```
+<old location>              <new location>
+config                   -> qc-scripts/config
+lib/*.R                  -> qc-scripts/R_scripts
+tools/create-relplot.sh  -> qc-scripts/shell_scripts
+software/*.py            -> qc-scripts/python_scripts
+software/*.pl            -> qc-scripts/perl_scripts
+jobs                     -> imputation-jobs
 ```

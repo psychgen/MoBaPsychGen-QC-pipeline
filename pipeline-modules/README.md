@@ -13,3 +13,18 @@
 * [Module X] - Chromosome X and pseudoautosomal regions (PAR) QC procedure
 * [Module MT] - Mitochondrial DNA haplotype estimation
 * [Module Y] - Chromosome Y haplotype estimation
+
+* [qc_m1.sh](#qc_m1sh)
+* [qc_m2.sh](#qc_m2sh)
+* [qc_chrX.sh](#qc_chrxsh)
+
+## Summary of scripts
+
+### qc_m1.sh
+This script performs module 1 of the QC pipeline.
+
+### qc_m2.sh
+This script performs module 0 and 1 of the QC pipeline.
+
+### qc_chrX.sh
+This script performs the chromosome X module of the QC pipeline.
