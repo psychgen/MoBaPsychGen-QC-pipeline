@@ -1,0 +1,27 @@
+#!/bin/bash
+#SBATCH --job-name=mergeall
+#SBATCH --account=p697_norment
+#SBATCH --time=4:00:00
+#SBATCH --ntasks=1
+#SBATCH --mem-per-cpu=8000M
+#SBATCH --cpus-per-task=64
+
+source /cluster/bin/jobsetup
+
+export COMORMENT=/cluster/projects/p697/github/comorment
+export SINGULARITY_BIND=""$COMORMENT/containers/reference:/REF:ro,/cluster/projects/p697:/cluster/projects/p697""
+export SIF=$COMORMENT/containers/singularity
+export PLINK="singularity exec --home $PWD:/home $SIF/gwas.sif plink"
+export PYTHON="singularity exec --home $PWD:/home $SIF/python3.sif python"
+
+module load singularity/3.7.1
+
+set -o errexit
+
+$PLINK --bfile chr1.imputed.info0p8.maf0p01 --merge-list merge_list_chrALL.txt --make-bed --out imputed.info0p8.maf0p01 --memory 480000
+$PYTHON concat_info_scores.py 0
+
+# merge_list_chrALL.txt were generated with the following python script:
+# with open('/cluster/projects/p697/projects/moba_qc_imputation/OF/GSA_may2021/merge_list_chrALL.txt', 'w') as f:
+#     for chri in range(2,23):
+#          f.write('chr{}.imputed.info0p8.maf0p01\n'.format(chri))

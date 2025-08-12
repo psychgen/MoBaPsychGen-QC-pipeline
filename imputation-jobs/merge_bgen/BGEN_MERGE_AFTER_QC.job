@@ -1,0 +1,57 @@
+#!/bin/bash
+#SBATCH --job-name=bgenmerge
+#SBATCH --account=p697_tsd
+#SBATCH --time=48:00:00
+#SBATCH --cpus-per-task=16
+#SBATCH --mem-per-cpu=8000M
+#SBATCH --array=1-22
+
+export QCTOOL=/cluster/projects/p697/projects/moba_qc_imputation/software/qctool_v2.0.8_rhel
+export OF=/cluster/projects/p697/projects/moba_qc_imputation/OF
+export CHR=${SLURM_ARRAY_TASK_ID}
+export BGENIX=/cluster/projects/p697/projects/moba_qc_imputation/software/bgenix
+export PLINK2=/cluster/projects/p697/projects/moba_qc_imputation/software/plink2
+
+###############################################################################
+# 98k batch
+###############################################################################
+
+# manually execute the following two commands to have the list of SNPs and subjects 
+# awk '{print $2,$2}' /cluster/projects/p697/genotype/MoBa_98k_post-imputationQC/98k-ec-eur-fin-batch-basic-qc.fam > keep.list
+# awk '{print $2}'  /cluster/projects/p697/genotype/MoBa_98k_post-imputationQC/98k-ec-eur-fin-batch-basic-qc-rsids.bim > extract.list
+
+
+#./plink2 --bgen ${OF}/GSA_M4_Final_checks/chr${CHR}.step10.imputed.bgen ref-first --oxford-single-chr ${CHR} --sample GSA.sample --extract extract.list --keep keep.list --make-pgen --out chr${CHR}_GSA
+#./plink2 --bgen ${OF}/HCE_M4_Final_checks/chr${CHR}.step10.imputed.bgen ref-first --oxford-single-chr ${CHR} --sample HCE.sample --extract extract.list --keep keep.list --make-pgen --out chr${CHR}_HCE
+#./plink2 --bgen ${OF}/OMNI_M4_Final_checks/chr${CHR}.step10.imputed.bgen ref-first --oxford-single-chr ${CHR} --sample OMNI.sample --extract extract.list --keep keep.list --make-pgen --out chr${CHR}_OMNI
+
+#./plink2 --pfile chr${CHR}_GSA --export bgen-1.3 ref-first id-paste=iid --out chr${CHR}_GSA
+#./plink2 --pfile chr${CHR}_HCE --export bgen-1.3 ref-first id-paste=iid --out chr${CHR}_HCE
+#./plink2 --pfile chr${CHR}_OMNI --export bgen-1.3 ref-first id-paste=iid --out chr${CHR}_OMNI
+
+#$QCTOOL -g chr${CHR}_OMNI.bgen -g chr${CHR}_GSA.bgen -g chr${CHR}_HCE.bgen -og chr${CHR}_MERGED.bgen -os chr${CHR}_MERGED.sample
+#$BGENIX -g chr${CHR}_MERGED.bgen -index
+# NB! the order of samples in QCed hardcalls and bgen files is now different, is this something we need to fix?
+
+###############################################################################
+# Release 2
+###############################################################################
+
+# Step1 - select SNPs
+# awk '{print $2,$2}' /cluster/projects/p697/genotype/Release2/release2-ec-eur-batch-basic-qc.fam > post-imputation-qc.keep.list
+# awk '{print $2}' /cluster/projects/p697/genotype/Release2/release2-ec-eur-batch-basic-qc.bim > post-imputation-qc.extract.list
+
+# Step2 - generate .sample file
+#df=pd.read_csv('chr@.ichunk_merged.fam', sep='\t', header=None, usecols=[1], names=['ID_1'])
+#df['ID_2'] = df['ID_1']
+#df['missing'] = 0
+#pd.concat([ pd.DataFrame([['0', '0', 0]], columns=['ID_1', 'ID_2', 'missing'] ), df ]).to_csv('chr@.ichunk_merged.sample', sep='\t', index=False)
+
+# Step3 - extract SNPs and individuals
+$PLINK2 --bgen chr${CHR}.step10.imputed.bgen ref-first --oxford-single-chr ${CHR} --sample chr@.ichunk_merged.sample --extract post-imputation-qc.extract.list --keep post-imputation-qc.keep.list --make-pgen --out chr${CHR}.step10.imputed.qc
+$PLINK2 --pfile chr${CHR}.step10.imputed.qc --export bgen-1.3 ref-first id-paste=iid --out chr${CHR}.step10.imputed.qc
+$BGENIX -g chr${CHR}.step10.imputed.qc.bgen -index
+
+#rm chr${CHR}.step10.imputed.qc.psam
+#rm chr${CHR}.step10.imputed.qc.pvar
+rm chr${CHR}.step10.imputed.qc.pgen

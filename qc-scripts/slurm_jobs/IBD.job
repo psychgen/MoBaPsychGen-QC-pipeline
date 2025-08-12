@@ -1,0 +1,22 @@
+#!/bin/bash
+#SBATCH --job-name=MOBA-IBD
+#SBATCH --account=p697
+#SBATCH --time=5:00:00
+#SBATCH --ntasks=1
+#SBATCH --mem-per-cpu=3G
+#SBATCH --cpus-per-task=16
+
+module purge
+module load plink/1.90b6.2
+module load R/3.5.0
+set -o errexit
+
+if [ -z ${GITHUB} ]; then
+    GITHUB=/cluster/projects/p697/github/norment/moba_qc_imputation
+fi
+
+plink --bfile ${fin} --genome --out ${fout}
+
+awk '{print $5,$7,$8,$10}' ${fout}.genome > ${fout}.csv
+Rscript $GITHUB/lib/plot-ibd.R ${fout}.csv ${tag}
+

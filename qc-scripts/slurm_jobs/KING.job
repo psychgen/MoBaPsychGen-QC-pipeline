@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --job-name=MOBA-KING
+#SBATCH --account=p697
+#SBATCH --time=5:00:00
+#SBATCH --ntasks=1
+#SBATCH --mem-per-cpu=3G
+#SBATCH --cpus-per-task=16
+
+module purge
+set -o errexit
+
+if [ -z ${king} ]; then
+    king=/cluster/projects/p697/projects/moba_qc_imputation/software/king225
+fi
+
+${king} -b ${fin}.bed --related --ibs --build --degree 2 --rplot --prefix ${fout}

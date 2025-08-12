@@ -55,12 +55,3 @@ $PLINK --bfile $prefix.step9 --update-name ID-$prefix.step4-HRC.txt --real-ref-a
 
 # Exclude duplicates one more time (could be introduced by Oxford script)
 $PLINK2 --bfile $prefix.step10 --rm-dup force-first --make-bed --out $prefix || true
-
-$PLINK --bfile $prefix --indep-pairwise 3000 1500 0.01 --out $prefix.indep
-$PLINK --bfile $prefix --extract $prefix.indep.prune.in --make-bed --real-ref-alleles --out $prefix.test
-$PLINK --bfile $prefix --extract $prefix.indep.prune.out --make-bed --real-ref-alleles --out $prefix.train
-
-cat $prefix.test.bim | $PYTHON rename_all_snps.py ${SLURM_ARRAY_TASK_ID} > $prefix.test.rename_snps.bim
-cp $prefix.test.fam $prefix.test.rename_snps.fam
-cp $prefix.test.bed $prefix.test.rename_snps.bed
-awk '{ print $2 }' $prefix.test.rename_snps.bim > $prefix.test.rename_snps.snps

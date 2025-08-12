@@ -8,8 +8,12 @@ The pipeline is described in the [preprint](https://doi.org/10.1101/2022.06.23.4
 
 ## Structure
 
-* [qc-scripts](qc-scripts) - various tools and scripts used throughout the QC part of the pipeline (modules 0-4)
-* [imputation-scripts](imputation-scripts) - tools, scripts and SLURM jobs used for phasing and imputation (modules 5-7)
+* [qc-scripts](qc-scripts) - various tools and scripts in R, python, perl, bash and SLURM jobs 
+  used in the QC part of the pipeline (modules 0-4) and post-imputation QC.
+  README files with information about what each script is used for can be found in each sub-directories.
+
+* [imputation-scripts](imputation-scripts) - tools, scripts and SLURM jobs used for phasing and imputation (modules 5-7).
+
 * [pipeline-modules](pipeline-modules) - documentation of specific steps in each module of the QC and imputation pipeline.
 
 Analytic code for the exemplar trio analyses are available [here](https://github.com/psychgen/moba-trio-analyses).
@@ -28,6 +32,7 @@ cat-bgen v1.1.4
 shapeit v2.r904
 impute4.1.2_r300.3
 impute_v2.3.2
+flashpca_v2
   
 R  4.0.5 
 python 3.8.10
