@@ -11,6 +11,7 @@
 * [create-liftover-input.R](#create-liftover-inputr)
 * [merge-relatedness-rt.R](#merge-relatedness-rtr)
 * [create-relplot.sh](#create-relplotsh)
+* []
 * [select-subsamples-on-pca-without1kg.R](#select-subsamples-on-pca-without1kgr)
 * [plot-sex.R](#plot-sexr)
 * [plot-kinship-histogram.R](#plot-kinship-histogramr)
@@ -231,6 +232,25 @@ Default legend positions will be applied without input of legendpos.
 ```
 sh create-relplot.sh rotterdam1-yc-eur-king-1_relplot.R "Rotterdam1 EUR" topright bottomright topright bottomright
 ```
+
+
+### create-update-chr-input.R 
+
+**Function**
+This script takes the liftover output and creates a file to update the chromosome position in PLINK bfiles.
+
+**Usage** ``Rscript create-update-chr-input.R dataprefix outprefix``
+
+**Arguments**
+
+* `dataprefix` - prefix of liftover bed output file
+* `outprefix` - prefix of output update-chr file
+
+**Example**
+```
+Rscript create-update-chr-input.R MorBarn_May2016-ec-liftover_output.bed MorBarn_May2016-ec-liftover-update-chr
+```
+
 
 ### select-subsamples-on-pca-without1kg.R
 
