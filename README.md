@@ -1,4 +1,4 @@
-# MoBaPsychGen QC pipeline code and documentation repository for manuscript entitled “Unique opportunities to study health and behavior in genotyped family cohorts”
+# MoBaPsychGen QC pipeline
 
 ## Overview
 
@@ -40,7 +40,7 @@ R  4.0.5
 python 3.8.10
 perl v5.32.1
 
-gwas.sif, python3.sif, R.sif containers from v1.0.0 release of https://github.com/comorment/containers
+gwas.sif, python3.sif, r.sif containers from v1.0.0 release of [https://github.com/comorment/containers](https://github.com/comorment/containers/releases/tag/v1.0.0)
 ```
 
 ## Folder structure
@@ -57,3 +57,8 @@ software/*.py            -> qc-scripts/python_scripts
 software/*.pl            -> qc-scripts/perl_scripts
 jobs                     -> imputation-jobs
 ```
+
+## Compute environment
+
+The pipeline was developed and tested on [TSD](https://www.uio.no/english/services/it/research/sensitive-data/index.html) - the University of Oslo's trusted research environment for sensitive data.
+The pipeline is designed to run on a SLURM-based HPC environment, and the scripts are written to be run in a containerized environment using Singularity or Apptainer.
