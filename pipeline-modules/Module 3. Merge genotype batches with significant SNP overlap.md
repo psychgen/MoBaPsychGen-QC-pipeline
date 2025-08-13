@@ -4,7 +4,7 @@ The steps in &quot;module 3&quot; are intended to be executed on each genotyping
 
 ## Quality Control (QC) steps
 Load PLINK module
-Follow the same setup as described in module 1 step-by-step document , e.g. set **GITHUB=/cluster/projects/p697/github/norment/moba_qc_imputation** if you work on machine with /cluster access (e.g. p697-submit), or **GITHUB=/tsd/p697/data/durable/s3-api/github/norment/moba_qc_imputation** if you work on a machine without /cluster access.
+Follow the same setup as described in module 1 step-by-step document , e.g. set ``GITHUB=/cluster/projects/p697/github/norment/moba_qc_imputation`` if you work on machine with /cluster access (e.g. p697-submit), or ``GITHUB=/tsd/p697/data/durable/s3-api/github/norment/moba_qc_imputation`` if you work on a machine without /cluster access.
 
 Unless otherwise specified, all commands are supposed to be run in your working directory (named with your initials) in DATA/DURABLE (see folder-structure-moba-2020.pdf). All plots produced in this module should be copied to /tsd/p697/data/durable/projects/moba_qc_imputation/export/Module_III_Plots folder when indicated. “Record” in the instructions below refers to recording the numbers in MoBa\_QC\_numbers spreadsheet on Google drive, when indicated. Please contact Elizabeth if you have any questions about the process.
 
