@@ -107,12 +107,12 @@ Update the fam files to include pedigree information reported through MoBa and t
       
       3.5.1. The individuals in 1kg.fam file are not ordered according to their population. But in order to assign colors during plotting, we need them to be in order. Thus, we will divide the file containing the PCs into “original” and “1kg” portions, sort the “1kg” portion and combine the two together for plotting. This can be achieved with the following commands: head -n a original-initials-1kg-pca.eigenvec > original-initials-pca-1. NB “a” in the “head” command is the number of individuals in the “original” PLINK files that were merged with 1KG (it is the number of individuals in original-initials-1kg-common.fam file). tail -n 1083 original-initials-1kg-pca.eigenvec | sort -k2 > 1kg-initials-pca-1, NB 1083 is the number of individuals in 1kg.fam, cat original-initials-pca-1 1kg-initials-pca-1 > original-1kg-initials-pca.
       3.5.2. Plot your batch with the 1KG dataset.
-         3.5.2.1. Plot the first 7 PCs in R using the plot-pca-with-1kg.R script. Usage instructions can be found on github (<https://github.com/norment/moba_qc_imputation/tree/master/lib#plot-pca-with-1kgr>). Basic usage: Rscript  $GITHUB/lib/plot-pca-with-1kg.R datalabel pcadata legendpos outprefix
+         3.5.2.1. Plot the first 7 PCs in R using the plot-pca-with-1kg.R script. Basic usage: Rscript  $GITHUB/lib/plot-pca-with-1kg.R datalabel pcadata legendpos outprefix
             3.5.2.1.1. Please use the below naming conventions for the Rscript arguments; datalabel: Please use the naming convention specified in the /resources/plot-PLINK.txt file, pcadata: original-1kg-initials-pca, legendpos - possible legend positions are: topleft, topright, bottomleft, bottomright, outprefix: original-initials
 
    3.6. Select core subsamples
       
-      3.6.1. Use either the ellipseselect.py (EUR) or R script (AFR &  ASIAN) to select the core subsamples. Usage instructions can be found on github (<https://github.com/norment/moba_qc_imputation/tree/master/lib#select-subsamples-on-pcar> & <https://github.com/norment/moba_qc_imputation/tree/master/software#ellipseselectpy-new-script-to-select-core-subsamples>).
+      3.6.1. Use either the ellipseselect.py (EUR) or R script (AFR &  ASIAN) to select the core subsamples.
       3.6.2. Make PLINK files for each core subsample. The below commands use the file names original-initials-core-subsample-eur.txt, original-initials-core-subsample-afr.txt, and original-initials-core-subsample-asian.txt for selecting the core subsamples. The file names may differ depending on if the R or python script was used.
          3.6.2.1. EUR subsample: plink --bfile original-initials-sex --keep original-initials-core-subsample-eur.txt --make-bed --out original-initials-eur
          3.6.2.2. AFR subsample: plink --bfile original-initials-sex --keep original-initials-core-subsample-afr.txt --make-bed --out original-initials-afr

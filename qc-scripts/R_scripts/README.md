@@ -63,9 +63,9 @@ draw thresholds.
 **Example**
 ```
 Rscript select-subsamples-on-pca.R Norment_jun2015 norment_batch4_jun2015-1kg-yc-pca norment_batch4_jun2015-yc norment-jun2015-yc-pca-core-select-custom.txt
+```
 
-# An example of the customfile (norment-jun2015-yc-pca-core-select-custom.txt) is seen here:
-https://github.com/psychgen/MoBaPsychGen-QC-pipeline/edit/main/scripts/config/m12bad-yc-pca-core-select-custom.txt
+An example of the customfile is in ``qc-scripts/config/norment-jun2015-yc-pca-core-select-custom.txt``.
 (where the zoom thresholds are only for zooming in, while the draw thresholds are for selecting individuals of subsamples, by dropping or commenting out all the draw threshold lines, zoom plots without threhold lines are made)
 ```
 
@@ -87,9 +87,6 @@ This script selects core (e.g. European, African, Asian) subsamples based on PCA
 ```
 Rscript select-subsamples-on-pca-ellipse.R Norment_jun2015 norment_batch4_jun2015-1kg-yc-pca norment_batch4_jun2015-yc norment-jun2015-yc-pca-core-select-ellipse-custom.txt
 
-# An example of the customfile (norment-jun2015-yc-pca-core-select-ellipse-custom.txt) is seen here:
-https://github.com/psychgen/MoBaPsychGen-QC-pipeline/edit/main/scripts/config/norment-jun2015-yc-pca-core-select-ellipse-custom.txt
-(where the zoom thresholds are for zooming in, while the ellipse thresholds are for selecting individuals of subsamples, by dropping or commenting out all the ellipse threshold lines, zoom and threhold plots with roughly suggested ellipse thresholds are made)
 ```
 
 ### plot-pca-selected-subsample.R

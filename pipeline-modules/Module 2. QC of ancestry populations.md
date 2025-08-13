@@ -383,7 +383,7 @@ This can be a memory intensive step particularly if you have a large batch, ther
    
       5.7.2. Make plots to visualize the between and within family relationships as reported by MoBa vs inferred by KING
    
-      5.7.3. Please run the create-relplot.sh script that uses the relplot R script from KING, and generates a png file with four or two merged subplots with optionally customized legend positions. Usage information is on github (<https://github.com/norment/moba_qc_imputation/tree/master/tools#create-relplotsh>).
+      5.7.3. Please run the create-relplot.sh script that uses the relplot R script from KING, and generates a png file with four or two merged subplots with optionally customized legend positions.
       Usage: sh $GITHUB/tools/create-relplot.sh r\_relplot tag [legendpos1 legendpos2 legendpos3 legendpos4]
       Arguments:
       r\_relplot - R script file for relplot from KING
@@ -893,7 +893,7 @@ In the “resources” folder in DATA/DURABLE, there are files named “yob.txt�
    
       10.7.2. Make plots to visualize the between and within family relationships as reported by MoBa vs inferred by KING
    
-      10.7.3. Please run the create-relplot.sh script that uses the relplot R script from KING, and generates a png file with four or two merged subplots with optionally customized legend positions. Usage information is on github (<https://github.com/norment/moba_qc_imputation/tree/master/tools#create-relplotsh>).
+      10.7.3. Please run the create-relplot.sh script that uses the relplot R script from KING, and generates a png file with four or two merged subplots with optionally customized legend positions.
       Usage: sh $GITHUB/tools/create-relplot.sh r\_relplot tag [legendpos1 legendpos2 legendpos3 legendpos4]
       Arguments:
       r\_relplot - R script file for relplot from KING
@@ -1215,7 +1215,7 @@ If you had outliers in step 14, use the original-initials-eur-2-round-selection 
    
       15.4.1. Run a Cochran-Mantel-Haenszel test for association in founders using sex as the phenotype: plink --bfile original-initials-eur-2-round-selection --filter-founders --chr 1-22 --pheno original-initials-eur-2-round-selection.fam --mpheno 3 --within original-initials-eur-3-plate-groups.txt --mh2 --out original-initials-eur-3-mh-plates
       
-      15.4.2. Create QQ plot using the $GITHUB/lib/plot-qqplot.R script for more information see: <https://github.com/norment/moba_qc_imputation/tree/master/lib#plot-qqplotr>. Usage: Rscript plot-qqplot.R inputfile tag pcol outprefix.
+      15.4.2. Create QQ plot using the $GITHUB/lib/plot-qqplot.R script. Usage: Rscript plot-qqplot.R inputfile tag pcol outprefix.
       Please use the following arguments: inputfile: original-initials-eur-3-mh-plates.cmh2; tag: use the “plot-PLINK” file in “resources” folder to assign the harmonized tag to the plots of your batch, followed by the core subpopulation, and QC round;  outprefix: original-initials-eur-3-mh-plates-qq-plot.
       Example: Rscript $GITHUB/lib/plot-qqplot.R original-initials-eur-3-mh-plates.cmh2 “PLOT-PLINK tag, population, round 2” 5, original-initials-eur-3-mh-plates-qq-plot
    
@@ -1522,7 +1522,7 @@ In the “resources” folder in DATA/DURABLE, there are files named “yob.txt�
 
       17.7.2. Make plots to visualize the between and within family relationships as reported by MoBa vs inferred by KING
    
-      17.7.3. Please run the create-relplot.sh script that uses the relplot R script from KING, and generates a png file with four or two merged subplots with optionally customized legend positions. Usage information is on github (<https://github.com/norment/moba_qc_imputation/tree/master/tools#create-relplotsh>).
+      17.7.3. Please run the create-relplot.sh script that uses the relplot R script from KING, and generates a png file with four or two merged subplots with optionally customized legend positions.
       Usage: sh $GITHUB/tools/create-relplot.sh r\_relplot tag [legendpos1 legendpos2 legendpos3 legendpos4]
       Arguments:
       r\_relplot - R script file for relplot from KING
@@ -1855,7 +1855,7 @@ If you had outliers in step 22, use the original-initials-eur-3-round-selection 
 1. ### Test for association between the plate and SNPs
    1. Run a Cochran-Mantel-Haenszel test for association in founders using sex as the phenotype.
       plink --bfile original-initials-eur-3-round-selection --filter-founders --chr 1-22 --pheno original-initials-eur-3-round-selection.fam --mpheno 3 --within original-initials-eur-4-plate-groups.txt --mh2 --out original-initials-eur-4-mh-plates
-   1. Create QQ plot using the $GITHUB/lib/plot-qqplot.R script for more information see: <https://github.com/norment/moba_qc_imputation/tree/master/lib#plot-qqplotr>. Usage: Rscript plot-qqplot.R inputfile tag pcol outprefix.
+   1. Create QQ plot using the $GITHUB/lib/plot-qqplot.R script. Usage: Rscript plot-qqplot.R inputfile tag pcol outprefix.
       Please use the following arguments: inputfile: original-initials-eur-4-mh-plates.cmh2; tag: use the “plot-PLINK” file in “resources” folder to assign the harmonized tag to the plots of your batch, followed by the core subpopulation, and QC round;  outprefix: original-initials-eur-4-mh-plates-qq-plot.
       Example: Rscript $GITHUB/lib/plot-qqplot.R original-initials-eur-4-mh-plates.cmh2 “PLOT-PLINK tag, population, round 3” 5 original-initials-eur-4-mh-plates-qq-plot
    1. Once done, please post the plots on slack, and copy the plots to the /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_II\_Plots folder.

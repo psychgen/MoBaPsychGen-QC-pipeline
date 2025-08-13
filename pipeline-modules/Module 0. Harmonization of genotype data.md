@@ -97,7 +97,7 @@ For the OmniExpress and Global Screening Array batches: update the chromosomal p
 
   5.1. Copy the liftover executable (&quot;software&quot; folder in DATA/DURABLE) and file to update the chromosomal positions (name: hg38ToHg19.over.chain.gz, &quot;software&quot; folder in DATA/DURABLE) to your working folder.
   
-  5.2. Create the liftover input file using the $GITHUB/lib/create-liftover-input.R script ([https://github.com/norment/moba\_qc\_imputation/tree/master/lib#create-liftover-inputr](https://github.com/norment/moba_qc_imputation/tree/master/lib#create-liftover-inputr)). Usage: Rscript $GITHUB/lib/create-liftover-input.R dataprefix outprefix
+  5.2. Create the liftover input file using the $GITHUB/lib/create-liftover-input.R script. Usage: Rscript $GITHUB/lib/create-liftover-input.R dataprefix outprefix
   
       5.2.1. For OmniExpress batches use the dataprefix: original
       5.2.2. For Global Screening Array batches use the dataprefix: original-initials-rsids

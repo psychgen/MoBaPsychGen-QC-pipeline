@@ -64,14 +64,16 @@ This step creates a set of .bgen files, and calculates imputation INFO scores us
 ```
 python make_jobs.py impute4 --prefix chr@ --hours 48 --num-ichunks <N>
 ```
-1. Copy <https://github.com/norment/moba_qc_imputation/blob/master/jobs/MERGE.job> to <ROOT> folder
+1. Copy ``MERGE.job`` to <ROOT> folder
 1. Execute “sbatch MERGE.job” command.
 
 The last step will convert from dosages (.bgen format) to hard calls (plink format), and merge INFO scores across imputation chunks. 
 ## Merging hard calls across chromosomes 
 Submit the following script to merge the result across chromosomes: 
 
-[https://github.com/norment/moba_qc_imputation/blob/master/jobs/](https://github.com/norment/moba_qc_imputation/blob/master/jobs/MERGE_PLINK_ALLCHR.job)[MERGE_PLINK_ALLCHR.job](https://github.com/norment/moba_qc_imputation/blob/master/jobs/MERGE_PLINK_ALLCHR.job)
+1. Copy ``MERGE_PLINK_ALLCHR.job`` to <ROOT> folder
+1. Execute “sbatch MERGE_PLINK_ALLCHR.job command.
+
 ## Imputation report
 
 Change ``cohort`` variable in ``imputation_report.py`` script,
