@@ -14,7 +14,7 @@ Analytic code for the exemplar trio analyses are available in a separate github 
   used in the QC part of the pipeline (modules 0-4) and post-imputation QC.
   README files with information about what each script is used for can be found in each sub-directories.
 
-* [imputation-scripts](imputation-scripts) - scripts and SLURM jobs used for phasing and imputation (modules 5-7).
+* [imputation-jobs](imputation-jobs) - scripts and SLURM jobs used for phasing and imputation (modules 5-7).
 
 * [pipeline-modules](pipeline-modules) - documentation of specific steps in each module of the QC and imputation pipeline, and undocumented shell scripts putting it all together. 
 
