@@ -6,21 +6,21 @@ This repository is home to documentation and code for the MoBaPsychGen QC pipeli
 
 The pipeline is described in the [preprint](https://doi.org/10.1101/2022.06.23.496289) entitled: "The Norwegian Mother, Father, and Child cohort study (MoBa) genotyping data resource: MoBaPsychGen pipeline v.1" and manuscript entitled “Unique opportunities to study health and behavior in genotyped family cohorts”. The latest reference should be cited by work based on either the data, procedures, or code from the MoBaPsychGen QC pipeline. 
 
+Analytic code for the exemplar trio analyses are available in a separate github repository[here](https://github.com/psychgen/moba-trio-analyses).
+
 ## Structure
 
 * [qc-scripts](qc-scripts) - various tools and scripts in R, python, perl, bash and SLURM jobs 
   used in the QC part of the pipeline (modules 0-4) and post-imputation QC.
   README files with information about what each script is used for can be found in each sub-directories.
 
-* [imputation-scripts](imputation-scripts) - tools, scripts and SLURM jobs used for phasing and imputation (modules 5-7).
+* [imputation-scripts](imputation-scripts) - scripts and SLURM jobs used for phasing and imputation (modules 5-7).
 
-* [pipeline-modules](pipeline-modules) - documentation of specific steps in each module of the QC and imputation pipeline.
+* [pipeline-modules](pipeline-modules) - documentation of specific steps in each module of the QC and imputation pipeline, and undocumented shell scripts putting it all together. 
 
-Analytic code for the exemplar trio analyses are available [here](https://github.com/psychgen/moba-trio-analyses).
+## 3rd party software
 
-## 3rd party
-
-External software dependencies not included in this repository:
+External software dependencies are as follows:
 
 ```
 plink v1.90b6.18 64-bit (16 Jun 2020)
@@ -43,8 +43,8 @@ gwas.sif, python3.sif, R.sif containers from v1.0.0 release of https://github.co
 
 ## Folder structure
 
-This software was re-organized into a cleaner folder structure.
-As older scripts may refer to obsolete location of the files, here is an overview of how files were relocated:
+Folder structure in this repository re-organized, as original placement of files was inconsistent and not very thought through.
+As older scripts, e.g. ``qc_m1.sh`` or ``qc_m2.sh``, may refer to obsolete location of the files, here is an overview of how files were relocated:
 
 ```
 <old location>              <new location>

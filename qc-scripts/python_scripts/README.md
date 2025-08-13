@@ -1,6 +1,7 @@
 ## Contents
-This subdirectory contains python scripts that can be used to select samples using from PC plots.
-These were the original scripts used during the QC and have since been replaced with Rscripts. We are including the scripts in the reposatory in case they are referenced in the pipeline-modules. 
+This subdirectory contains python scripts that can be used to select samples from PC plots.
+``select_samples.py`` is obsolete, and was replaced with ``ellipseselect.py`` (for EUR samples),
+and ``R_scripts`` (for AFR & ASIAN samples).
 
 * [select_samples.py](#select_samplespy)
 * [ellipseselect.py](#ellipseselectpy)

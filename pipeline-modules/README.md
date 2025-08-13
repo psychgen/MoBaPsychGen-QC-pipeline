@@ -18,6 +18,9 @@
 * [qc_m2.sh](#qc_m2sh)
 * [qc_chrX.sh](#qc_chrxsh)
 
+Modules 5-7 (pre-phasing QC, phasing and imputation) are highly coupled, and should be generally considered a single module performing imputation.
+The input to module 5 consists of one “bfile” in plink format (.bed/.bim/.fam), with approximately 400K-800K genetic variants. The output of module 7 is dosage data (in bgen format, split per chromosome, with 40M genetic variants) and hard calls (in plink “bfile” format, one file concatenated across chromosomes, with between 5M and 10M genetic variants selected by INFO and MAF filters).
+
 ## Summary of scripts
 
 ### qc_m1.sh

@@ -10,8 +10,6 @@ This document describes the following steps:
 1. Merging hard calls across chromosomes 
 1. Imputation report (also saves merged snp stats files to the result folder)
 
-The input to this procedure consists of one “bfile” in plink format (.bed/.bim/.fam), with approximately 400K-800K genetic variants. The output is dosage data (in bgen format, split per chromosome, with 40M genetic variants) and hard calls (in plink “bfile” format, one file concatenated across chromosomes, with between 5M and 10M genetic variants selected by INFO and MAF filters).
-
 ## Imputation using impute4
 
 Steps to run imputation:
@@ -60,12 +58,12 @@ done
 ```
 The previous step outputs 22 commands that can be copy-pasted and executed. 
 
-This step creates a set of .bgen files, and calculates imputation INFO scores using qctool. Due few duplicated rs# at the same CHR:BP we apply **rename\_multiallelic\_snps.py** to ensure a unique marker name. This is done before creating .bgen and INFO files - all of them have duplicated IDs replaced with CHR:BP\_A1\_A2 codes. In total this affects about ~10.000 variants in HRC reference, the names for all other variants are kept unchanged.
+This step creates a set of .bgen files, and calculates imputation INFO scores using qctool. Due few duplicated rs# at the same CHR:BP we apply ``rename_multiallelic_snps.py`` to ensure a unique marker name. This is done before creating .bgen and INFO files - all of them have duplicated IDs replaced with ``CHR:BP_A1_A2 codes``. In total this affects about ~10.000 variants in HRC reference, the names for all other variants are kept unchanged.
 ## Merging imputation chunks (dosage data)
 1. Re-generate “Makefile” file by running the following command:
-
-python make\_jobs.py impute4 --prefix chr@ --hours 48 --num-ichunks <N>
-
+```
+python make_jobs.py impute4 --prefix chr@ --hours 48 --num-ichunks <N>
+```
 1. Copy <https://github.com/norment/moba_qc_imputation/blob/master/jobs/MERGE.job> to <ROOT> folder
 1. Execute “sbatch MERGE.job” command.
 
@@ -75,6 +73,6 @@ Submit the following script to merge the result across chromosomes:
 
 [https://github.com/norment/moba_qc_imputation/blob/master/jobs/](https://github.com/norment/moba_qc_imputation/blob/master/jobs/MERGE_PLINK_ALLCHR.job)[MERGE_PLINK_ALLCHR.job](https://github.com/norment/moba_qc_imputation/blob/master/jobs/MERGE_PLINK_ALLCHR.job)
 ## Imputation report
-At this point there are no step-by-step instructions to generate imputation report. It’s based on the following script:  
 
-<https://github.com/norment/moba_qc_imputation/blob/master/report/imputation_report_HCE.ipynb>, but it needs to be adjusted manually for each batch. A more recent version of these scripts is available here: <https://github.com/norment/moba_qc_imputation/blob/master/users/of/GSA_may2021/MoBa_pre_phasing_qc_and_imputation_reports.ipynb> 
+Change ``cohort`` variable in ``imputation_report.py`` script,
+check that it points to correct path on the file system, and execute as ``python imputation_report.py``.

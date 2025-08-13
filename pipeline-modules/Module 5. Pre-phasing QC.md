@@ -18,10 +18,11 @@ Pre-phasing QC does not exclude any individuals. Therefore, pre-phasing QC repor
 8. Update SNP IDs to match those in HRC (Oxford perl script can be used for this)
 9. Change ref/alt allele assignments where needed (Oxford perl script can be used for this)
 
-Steps to run the script as as follows:
+## Instructions
 
-1. Copy input bfile to /cluster/projects/p697/projects/moba\_qc\_imputation/OF/<batch>, where <batch> is the name of the imputation batch (i.e. HCE, OMNI, GSA, or similar). This folder will be referred to as <ROOT>. 
-1. Copy PRE\_PHASING\_QC.job to the <ROOT> folder.
+1. Copy input bfile to /cluster/projects/p697/projects/moba\_qc\_imputation/OF/<batch>, where <batch> is the name of the imputation batch (i.e. HCE, OMNI, GSA, or similar). This folder will be referred to as ``<ROOT>``. 
+1. Copy PRE\_PHASING\_QC.job to the ``<ROOT>`` folder.
+1. Copy ``pre_phasing_qc_report.py`` to the ``<ROOT>`` folder.
 1. Edit PRE\_PHASING\_QC.job by changing  “hce-ec-eur-fin-pass-qc”  to the actual name of your input bfile
 1. Run “sbatch PRE\_PHASING\_QC.job”. This may take approximately 10 minutes. 
 1. Run “python pre_phasing_qc_report.py” to generate pre-phasing QC reports.
