@@ -6,7 +6,7 @@ This repository is home to documentation and code for the MoBaPsychGen QC pipeli
 
 The pipeline is described in the [preprint](https://doi.org/10.1101/2022.06.23.496289) entitled: "The Norwegian Mother, Father, and Child cohort study (MoBa) genotyping data resource: MoBaPsychGen pipeline v.1" and manuscript entitled “Unique opportunities to study health and behavior in genotyped family cohorts”. The latest reference should be cited by work based on either the data, procedures, or code from the MoBaPsychGen QC pipeline. 
 
-Analytic code for the exemplar trio analyses are available in a separate github repository[here](https://github.com/psychgen/moba-trio-analyses).
+Analytic code for the exemplar trio analyses are available in a separate github repository [here](https://github.com/psychgen/moba-trio-analyses).
 
 ## Structure
 
@@ -17,6 +17,8 @@ Analytic code for the exemplar trio analyses are available in a separate github 
 * [imputation-scripts](imputation-scripts) - scripts and SLURM jobs used for phasing and imputation (modules 5-7).
 
 * [pipeline-modules](pipeline-modules) - documentation of specific steps in each module of the QC and imputation pipeline, and undocumented shell scripts putting it all together. 
+
+* [resources](resources) - overview of data resources used throughout the pipeline
 
 ## 3rd party software
 

@@ -1,0 +1,16 @@
+genome<-read.table("original-initials-eur-king-1-ibd.genome", header=T)
+
+png("original-eur-king-1-ibd-hist.png")
+par(mfrow=c(1,2))
+hist(genome$PI_HAT,breaks=50,col="red",main="PI_HAT in original EUR",xlab="PI_HAT")
+hist(genome$PI_HAT,breaks=50,col="red",main="PI_HAT in original EUR, zoomed",xlab="PI_HAT",xlim=c(0,0.5))
+dev.off()
+
+png(file="original-eur-king-1-ibd-plot.png", res=250, width = 3000, height = 1900)
+with(genome,plot(Z0,Z1, xlim=c(0,1), ylim=c(0,1), type="n",xlab=""))
+with(subset(genome,RT=="UN") , points(Z0,Z1,col=1))
+with(subset(genome,RT=="OT") , points(Z0,Z1,col=4))
+with(subset(genome,RT=="PO") , points(Z0,Z1,col=2))
+with(subset(genome,RT=="FS"),points(Z0,Z1,col=3))
+legend(1,1, xjust=1, yjust=1, legend=levels(genome$RT), pch=16, col=c(3,4,2,1))
+dev.off()

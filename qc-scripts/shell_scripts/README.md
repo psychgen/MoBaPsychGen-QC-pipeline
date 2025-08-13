@@ -1,6 +1,7 @@
 ## Contents
 
 * [create-relplot.sh](#create-relplotsh)
+* [cryptic.sh](#crypticsh)
 
 ### create-relplot.sh
 
@@ -22,4 +23,20 @@ Default legend positions will be applied without input of legendpos.
 **Example**
 ```
 sh create-relplot.sh rotterdam1-yc-eur-king-1_relplot.R "Rotterdam1 EUR" topright bottomright topright bottomright
+```
+
+### cryptic.sh
+
+**Function**
+Create files with (1) sum of all kinship coefficients per individual (when kinship>=5%) and (2) count of all individuals with whom an individual ha$
+
+**Usage** ``sh cryptic.sh <king.ibs0> <out>``
+
+**Arguments** 
+* `king.ibs0` - ibs0 output from king
+* `out` - prefix for otuput file
+
+**Example**
+```
+cryptic.sh king-3.ibs0 cryptic-3
 ```
