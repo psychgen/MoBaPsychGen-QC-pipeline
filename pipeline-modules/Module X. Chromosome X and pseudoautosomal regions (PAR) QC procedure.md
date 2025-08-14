@@ -1,9 +1,9 @@
-Module X. Chromosome X QC
+# Module X. Chromosome X QC
 
 The steps in the “Chromosome X QC” are intended to be executed on each core subsample. As an example, the steps below use the European subsample as we will prioritize the European subsamples because they account for the majority of the MoBa cohort. Once you have finished QC-ing the European subsample, please re-run all the steps on other subsamples in your batch. Please keep the file names the same, except for the population indicator. We use “eur” to indicate a European subsample, please use “afr” and “asian” as indicators of African and Asian subsamples. When you read “record” in the instructions below, it means to fill out the google sheet named “MoBa\_QC\_numbers” that is created to keep track of the QC numbers for the report.
 
 
-# Quality Control (QC) steps
+## Quality Control (QC) steps
 
 Load PLINK module
 
@@ -14,20 +14,20 @@ Unless otherwise specified, all commands are supposed to be run in your working 
 All plots produced in this module should be copied to /tsd/p697/data/durable/projects/moba\_qc\_imputation/export/Module\_X\_Plots folder when indicated. “Record” in the instructions below refers to recording the numbers in MoBa\_QC\_numbers spreadsheet on Google drive, when indicated. Please contact Elizabeth if you have any doubts/questions about the process.
 
 
-# FIRST ROUND
+## FIRST ROUND
 
-1. ## Harmonize and restrict to sex chromosomes
+1. ### Harmonize and restrict to sex chromosomes
 
    1. Copy relevant batch bfiles from to your working directory\
       cp /ess/p697/cluster/projects/moba\_qc\_imputation/OF/chrX\_imputation/batches/original.\* /ess/p697/data/durable/projects/moba\_qc\_imputation/initials/ChrX/batch
 
-2. ## Restrict to individuals passing autosome QC and update pedigree to match
+2. ### Restrict to individuals passing autosome QC and update pedigree to match
 
    1. plink --bfile original --update-ids /ess/p697/data/durable/projects/moba\_qc\_imputation/resources/MoBa\_PsychGen\_v1\_update\_ids.txt --chr 23-25 --make-bed --out original-sex\_chr-initials-update-ids
 
    2. plink --bfile original-sex\_chr-initials-update-ids --keep /ess/p697/data/durable/projects/moba\_qc\_imputation/resources/MoBa\_PsychGen\_v1\_keep.txt  --update-parents /ess/p697/data/durable/projects/moba\_qc\_imputation/resources/MoBa\_PsychGen\_v1\_update\_parents.txt --make-bed --out original-sex\_chr-initials-keep
 
-3. ## Split by chromosome and where relevant by sex
+3. ### Split by chromosome and where relevant by sex
 
    1. Chr 23 females\
       plink --bfile original-sex\_chr-initials-keep --chr 23 --filter-females --make-bed --out original-initials-chr23-female
@@ -44,9 +44,9 @@ All plots produced in this module should be copied to /tsd/p697/data/durable/pro
    5. Chr 25 (females and males)\
       plink --bfile original-sex\_chr-initials-keep --chr 25 --make-bed --out original-initials-chr25
 
-4. ## Basic QC
+4. ### Basic QC
 
-   1. ### MAF
+   1. #### MAF
 
       1. Chr23 females\
          plink --bfile original-initials-chr23-female --maf 0.005 --make-bed --out original-initials-chr23-female-common
@@ -60,7 +60,7 @@ All plots produced in this module should be copied to /tsd/p697/data/durable/pro
       4. Chr 25\
          plink --bfile original-initials-chr25 --maf 0.005 --make-bed --out original-initials-chr25-common
 
-   2. ### Call rates
+   2. #### Call rates
 
       1. Chr 23 females\
          plink --bfile original-initials-chr23-female-common --missing --out original-initials-chr23-female-missing\
@@ -90,7 +90,7 @@ All plots produced in this module should be copied to /tsd/p697/data/durable/pro
       plink --bfile original-initials-chr25-95 --geno 0.02 --make-bed --out original-initials-chr25-98\
       plink --bfile original-initials-chr25-98 --geno 0.02 --mind 0.02 --make-bed --out original-initials-chr25-call-rates
 
-   5. ### HWE
+   5. #### HWE
 
       1. Chr 23 females\
          plink --bfile original-initials-chr23-female-call-rates --hwe 0.000001 --make-bed --out original-initials-chr23-female-basic-qc
@@ -104,7 +104,7 @@ All plots produced in this module should be copied to /tsd/p697/data/durable/pro
       4. Chr 25\
          plink --bfile original-initials-chr25-call-rates --hwe 0.000001 --make-bed --out original-initials-chr25-basic-qc
 
-   6. ### Hetrozygosity
+   6. #### Hetrozygosity
 
 Unless distribution is non-normal don't remove individuals  - instead rely on checks performed in autosome QC 
 
@@ -113,9 +113,9 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
    Rscript $GITHUB/lib/plot-heterozygosity-common.R original-initials-chr25-het-miss "original, chromosome XY"\
    tail -n +2 original-initials-chr25-het-miss-het-fail.txt | wc -l
 
-5) ## Sex check
+5) ### Sex check
 
-   1. ### Merge all sex chromosomes
+   1. #### Merge all sex chromosomes
 
       1. Create SNP list\
          R\
@@ -160,7 +160,7 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
       4. PLINK merge\
          plink --merge-list original-initials-chr23-24-25\_merge.txt --keep original-initials-chr23-24-25-keep.ind --extract original-initials-chr23-24-25-keep.snps --make-bed --out original-initials-chr23-24-25-basic-qc
 
-   2. ### Run sex check
+   2. #### Run sex check
 
       1. Regular sex check based on chr x only\
          plink --bfile original-initials-chr23-24-25-basic-qc --check-sex --out original-initials-chr23-24-25-sex-check
@@ -181,12 +181,12 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
          wc -l original-initials-chr23-24-25-bad-sex.txt\
          plink --bfile original-initials-chr23-24-25-basic-qc --remove original-initials-chr23-24-25-bad-sex.txt --make-bed --out original-initials-chr23-24-25-pass-sex-check
 
-6) ## ME
+6) ### ME
 
    1. All sex chromosomes\
       plink --bfile original-initials-chr23-24-25-pass-sex-check --me 0.05 0.01 --set-me-missing --mendel-duos --make-bed --out original-initials-chr23-24-25-me
 
-7) ## Plate effects
+7) ### Plate effects
 
    1. Create shuffled sex phenotype\
       echo -e "FID\tIID\tPHENO" > original-initials-chr23-24-25-shuffle\_sex.txt\
@@ -210,9 +210,9 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
       plink --bfile original-initials-chr23-24-25-me --exclude original-initials-chr23-24-25-mh-plates-significant --make-bed --out original-initials-chr23-24-25-batch
 
 
-# SECOND ROUND
+## SECOND ROUND
 
-8. ## Split by chromosome and where relevant by sex
+8. ### Split by chromosome and where relevant by sex
 
    1. Chr 23 females\
       plink --bfile original-initials-chr23-24-25-batch --chr 23 --filter-females --make-bed --out original-initials-chr23-female-2
@@ -229,9 +229,9 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
    5. Chr 25\
       plink --bfile original-initials-chr23-24-25-batch --chr 25 --make-bed --out original-initials-chr25-2
 
-9. ## Basic QC
+9. ### Basic QC
 
-   1. ### MAF
+   1. #### MAF
 
       1. Chr 23 females\
          plink --bfile original-initials-chr23-female-2 --maf 0.005 --make-bed --out original-initials-chr23-female-2-common
@@ -245,7 +245,7 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
       4. Chr 25\
          plink --bfile original-initials-chr25-2 --maf 0.005 --make-bed --out original-initials-chr25-2-common
 
-   2. ### Call rates
+   2. #### Call rates
 
       1. Chr 23 females\
          plink --bfile original-initials-chr23-female-2-common --missing --out original-initials-chr23-female-2-missing\
@@ -275,7 +275,7 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
          plink --bfile original-initials-chr25-2-95 --geno 0.02 --make-bed --out original-initials-chr25-2-98\
          plink --bfile original-initials-chr25-2-98 --geno 0.02 --mind 0.02 --make-bed --out original-initials-chr25-2-call-rates
 
-   3. ### HWE
+   3. #### HWE
 
       1. Chr 23 female\
          plink --bfile original-initials-chr23-female-2-call-rates --hwe 0.000001 --make-bed --out original-initials-chr23-female-2-basic-qc
@@ -289,7 +289,7 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
       4. Chr 25\
          plink --bfile original-initials-chr25-2-call-rates --hwe 0.000001 --make-bed --out original-initials-chr25-2-basic-qc
 
-   4. ### Hetrozygosity
+   4. #### Hetrozygosity
 
 Unless distribution is non-normal don't remove individuals  - instead rely on checks performed in autosome QC
 
@@ -298,9 +298,9 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
    Rscript $GITHUB/lib/plot-heterozygosity-common.R original-initials-chr25-2-het-miss "original, chromosome XY"\
    tail -n +2 original-initials-chr25-2-het-miss-het-fail.txt | wc -l
 
-10) ## Sex check
+10) ### Sex check
 
-    1. ### Merge all sex chromosomes
+    1. #### Merge all sex chromosomes
 
        1. Create SNP list\
           R\
@@ -345,7 +345,7 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
        4. PLINK merge\
           plink --merge-list original-initials-chr23-24-25-2\_merge.txt --keep original-initials-chr23-24-25-2-keep.ind --extract original-initials-chr23-24-25-2-keep.snps --make-bed --out original-initials-chr23-24-25-2-basic-qc
 
-    2. ### Run sex check
+    2. #### Run sex check
 
        1. Regular sex check based on chr x only\
           plink --bfile original-initials-chr23-24-25-2-basic-qc --check-sex --out original-initials-chr23-24-25-2-sex-check
@@ -366,12 +366,12 @@ Unless distribution is non-normal don't remove individuals  - instead rely on c
        wc -l original-initials-chr23-24-25-2-bad-sex.txt\
        plink --bfile original-initials-chr23-24-25-2-basic-qc --remove original-initials-chr23-24-25-2-bad-sex.txt --make-bed --out original-initials-chr23-24-25-2-pass-sex-check
 
-11) ## ME
+11) ### ME
 
     1. All sex chromosomes\
        plink --bfile original-initials-chr23-24-25-2-pass-sex-check --me 0.05 0.01 --set-me-missing --mendel-duos --make-bed --out original-initials-chr23-24-25-2-me
 
-12) ## Plate effects
+12) ### Plate effects
 
     1. Create plate file\
        ./match.pl -f ARRAY-plates.txt -g original-initials-chr23-24-25-2-me.fam -k 1 -l 2 -v 3 | awk '$7!="-" {print $0}' | sort -k 7 | awk '{print $1,$2,$7}' > original-initials-chr23-24-25-2-plates.txt
