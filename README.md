@@ -8,11 +8,11 @@ The pipeline is described in the [preprint](https://doi.org/10.1101/2022.06.23.4
 
 Analytic code for the exemplar trio analyses are available in a separate github repository [here](https://github.com/psychgen/moba-trio-analyses).
 
-## Structure
+## Directory structure
 
-* [qc-scripts](qc-scripts) - various tools and scripts in R, python, perl, bash and SLURM jobs 
+* [qc-scripts](qc-scripts) - various tools and scripts written in R, python, perl, bash and SLURM scheduler
   used in the QC part of the pipeline (modules 0-4) and post-imputation QC.
-  README files with information about what each script is used for can be found in each sub-directories.
+  README files with information about what each script is used for can be found in the respective sub-directories.
 
 * [imputation-jobs](imputation-jobs) - scripts and SLURM jobs used for phasing and imputation (modules 5-7).
 
@@ -22,7 +22,7 @@ Analytic code for the exemplar trio analyses are available in a separate github 
 
 ## 3rd party software
 
-External software dependencies are as follows:
+External software dependencies used for this project are as follows:
 
 ```
 plink v1.90b6.18 64-bit (16 Jun 2020)
@@ -40,12 +40,14 @@ R  4.0.5
 python 3.8.10
 perl v5.32.1
 
-gwas.sif, python3.sif, r.sif containers from v1.0.0 release of [https://github.com/comorment/containers](https://github.com/comorment/containers/releases/tag/v1.0.0)
+gwas.sif, python3.sif, r.sif "COSGAP" containers from v1.0.0 release of [https://github.com/comorment/containers](https://github.com/comorment/containers/releases/tag/v1.0.0)
 ```
 
-## Folder structure
+For details on COSGAP containers, see the [documentation](https://cosgap.readthedocs.io/en/latest) and the corresponding [GitHub repository](https://github.com/comorment/containers).
 
-Folder structure in this repository re-organized, as original placement of files was inconsistent and not very thought through.
+## Deprecated folder structure
+
+The folder structure in this repository is re-organized, as original placement of files was inconsistent and not very thought through.
 As older scripts, e.g. ``qc_m1.sh`` or ``qc_m2.sh``, may refer to obsolete location of the files, here is an overview of how files were relocated:
 
 ```
@@ -62,3 +64,7 @@ jobs                     -> imputation-jobs
 
 The pipeline was developed and tested on [TSD](https://www.uio.no/english/services/it/research/sensitive-data/index.html) - the University of Oslo's trusted research environment for sensitive data.
 The pipeline is designed to run on a SLURM-based HPC environment, and the scripts are written to be run in a containerized environment using Singularity or Apptainer.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
