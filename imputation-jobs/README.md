@@ -6,47 +6,52 @@ The remaining SLURM jobs are included in this folder.
 
 Some of the scripts include experimental feature that were not used as part of MoBa QC and Imputation (e.g. phasing and imputation using alternative software).
 
-* [make_hrc_format_conversion_scripts.py](#make_hrc_format_conversion_scriptspy)
-* [make_jobs.py](#make_jobspy)
-* [PRE_PHASING_QC.job](#pre_phasing_qcjob)
-* [pre_phasing_qc_report.py](#pre_phasing_qc_reportpy)
-* [MERGE.job](#mergejob)
-* [MERGE_PLINK_ALLCHR.job](#merge_plink_allchrjob)
-* [concat_info_scores.py](#concat_info_scorespy)
-* [imputation_report.py](#imputation_reportpy)
-* [merge_bgen](#merge_bgen)
+- [Contents](#contents)
+- [Summary of scripts](#summary-of-scripts)
+  - [make\_hrc\_format\_conversion\_scripts.py](#make_hrc_format_conversion_scriptspy)
+  - [make\_jobs.py](#make_jobspy)
+  - [PRE\_PHASING\_QC.job](#pre_phasing_qcjob)
+  - [pre\_phasing\_qc\_report.py](#pre_phasing_qc_reportpy)
+  - [MERGE.job](#mergejob)
+  - [MERGE\_PLINK\_ALLCHR.job](#merge_plink_allchrjob)
+  - [concat\_info\_scores.py](#concat_info_scorespy)
+  - [imputation\_report.py](#imputation_reportpy)
+  - [merge\_bgen](#merge_bgen)
 
 ## Summary of scripts
 
-### make_hrc_format_conversion_scripts.py
+### [make_hrc_format_conversion_scripts.py](make_hrc_format_conversion_scripts.py)
+
 Converts original publically available HRC reference panel files to a format compatible with shapeit2.
 
-### make_jobs.py
+### [make_jobs.py](make_jobs.py)
+
 Generate phasing job files and defines chunks of individulas for imputation.
 
-### PRE_PHASING_QC.job
+### [PRE_PHASING_QC.job](PRE_PHASING_QC.job)
+
 Contains the pre-phasing QC steps. The input to this script is one “bfile” in plink format (.bed/.bim/.fam), with approximately 400K-800K genetic variants.
 
-### pre_phasing_qc_report.py
+### [pre_phasing_qc_report.py](pre_phasing_qc_report.py)
+
 Generagtes a report describing how many SNPs were excluded during pre-phasing QC and why they were removed. Additionally the number of SNPs with updated IDs and strand flips, ect. is described.
 
-### MERGE.job
+### [MERGE.job](MERGE.job)
 
 Convert from dosages (.bgen format) to hard calls (plink format), and merge INFO scores across imputation chunks. 
 
-### MERGE_PLINK_ALLCHR.job
+### [MERGE_PLINK_ALLCHR.job](MERGE_PLINK_ALLCHR.job)
 
 Merging hard calls across chromosomes.
 
-### concat_info_scores.py
+### [concat_info_scores.py](concat_info_scores.py)
 
 Concatenate info scores across SNPs (imputation chunks).
 
-### imputation_report.py
+### [imputation_report.py](imputation_report.py)
 
 Generate imputation reports.
 
-### merge_bgen
+### [merge_bgen](merge_bgen)
 
 Folder containing scripts for generating dosage files in .bgen format using a subset of SNPs that passed post-imputation QC procedure.
-
