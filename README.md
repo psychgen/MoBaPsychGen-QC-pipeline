@@ -22,28 +22,24 @@ Analytic code for the exemplar trio analyses are available in a separate github 
 
 ## 3rd party software
 
-External software dependencies used for this project are as follows:
+External software dependencies used for this project can be ontaing from the following links:
 
-```
-plink v1.90b6.18 64-bit (16 Jun 2020)
-plink2 v2.00a2.3LM 64-bit Intel (24 Jan 2020) 
-king v2.2.5
-BCFtools v1.9
-qctool v2.0.8_rhel
-cat-bgen v1.1.4
-shapeit v2.r904
-impute4.1.2_r300.3
-impute_v2.3.2
-flashpca_v2
-  
-R  4.0.5 
-python 3.8.10
-perl v5.32.1
+* ``plink v1.90b6.18 64-bit (16 Jun 2020)`` (https://www.cog-genomics.org/plink/)
+* ``plink2 v2.00a2.3LM 64-bit Intel (24 Jan 2020)`` (https://www.cog-genomics.org/plink/2.0/)
+* ``king v2.2.5`` (https://www.kingrelatedness.com/history.shtml#2.2.5)
+* ``BCFtools v1.9`` (https://github.com/samtools/bcftools/releases/tag/1.9)
+* ``qctool v2.0.8_rhel`` (https://www.chg.ox.ac.uk/~gav/qctool/documentation/download.html)
+* ``cat-bgen v1.1.4`` (https://enkre.net/cgi-bin/code/bgen/doc/trunk/doc/wiki/cat-bgen.md)
+* ``shapeit v2.r904`` (https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#download)
+* ``impute4.1.2_r300.3`` (https://jmarchini.org/software/#impute-4)
+* ``impute_v2.3.2`` (https://jmarchini.org/software/#impute-2)
+* ``flashpca_v2`` (https://github.com/gabraham/flashpca/releases/tag/v2.0)
+* COSGAP v1.0.0 containers (``gwas.sif``, ``python3.sif``, ``r.sif`` from https://github.com/comorment/containers/releases/tag/v1.0.0).
+For details see the [documentation](https://cosgap.readthedocs.io/en/latest).
+* ``R 4.0.5`` 
+* ``python 3.8.10``
+* ``perl v5.32.1``
 
-gwas.sif, python3.sif, r.sif "COSGAP" containers from v1.0.0 release of [https://github.com/comorment/containers](https://github.com/comorment/containers/releases/tag/v1.0.0)
-```
-
-For details on COSGAP containers, see the [documentation](https://cosgap.readthedocs.io/en/latest) and the corresponding [GitHub repository](https://github.com/comorment/containers).
 
 ## Deprecated folder structure
 
