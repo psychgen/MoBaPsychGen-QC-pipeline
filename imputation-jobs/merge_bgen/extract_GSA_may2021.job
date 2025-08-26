@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH --job-name=prephase
+#SBATCH --account=p697
+#SBATCH --time=48:00:00
+#SBATCH --ntasks=1
+#SBATCH --mem-per-cpu=8000M
+#SBATCH --cpus-per-task=16
+#SBATCH --array=1-22
+
+source /cluster/bin/jobsetup
+
+set -o errexit
+
+export QCTOOL=/cluster/projects/p697/projects/moba_qc_imputation/software/qctool_v2.0.8_rhel
+$QCTOOL -g /cluster/projects/p697/projects/moba_qc_imputation/OF/GSA_may2021/chr${SLURM_ARRAY_TASK_ID}.step10.imputed.bgen -incl-rsids MoBaPsychGen_v1-ec-eur-batch-basic-qc.snps -og GSA_may2021_chr${SLURM_ARRAY_TASK_ID}.bgen
