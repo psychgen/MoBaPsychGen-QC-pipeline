@@ -91,22 +91,21 @@ Batch-specific and study-specific parameter files for:
 - Sex concordance verification
 - Hardy-Weinberg equilibrium testing
 
-**Integration with Standard Tools**: Compatible with:
+**Integration with Standard Tools and resources** 
 
-- PLINK (primary genetic analysis software)
+- PLINK (genome analysis toolset)
 - KING (kinship and relatedness analysis)
 - 1000 Genomes reference data
 - HRC imputation reference panel
 
-**Visualization Focus**: Extensive plotting capabilities for:
+**Visualization**: Plotting capabilities for:
 
 - Quality assessment
 - Population structure
 - Relationship verification
 - Batch effect identification
-- Statistical distributions
 
-**HPC Ready**: SLURM job templates and modular design suitable for high-performance computing environments.
+**HPC Ready**: SLURM job templates for high-performance computing environments.
 
-**Interactive Capabilities**: Web-based and GUI tools for manual sample curation and quality assessment.
+**Interactive Capabilities**: GUI tools for manual sample curation and quality assessment.
 
