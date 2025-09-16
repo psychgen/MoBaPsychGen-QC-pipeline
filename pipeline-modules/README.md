@@ -9,7 +9,7 @@ The modules are designed to be run sequentially, with each module building on th
 * [Module 1](Module%201.%20Classify%20MoBa%20individuals%20against%201000%20Genomes%20ancestral%20populations.md) - Classify MoBa individuals against 1000 Genomes ancestral populations
 * [Module 2](Module%202.%20QC%20of%20ancestry%20populations.md) - QC of ancestry populations
 * [Module 3](Module%203.%20Merge%20genotype%20batches%20with%20significant%20SNP%20overlap.md) - Merge by genotyping array
-* [Module 4] - QC of ancestry populations in merged genotyping array datasets
+* [Module 4](Module%204.%20QC%20of%20merged%20genotyping%20arrays.md) - QC of ancestry populations in merged genotyping array datasets
 * [Module 5](Module%205.%20Pre-phasing%20QC.md) - Pre-phasing QC
 * [Module 6](Module%206.%20Phasing.md) - Phasing
 * [Module 7](Module%207.%20Imputation.md) - Imputation
