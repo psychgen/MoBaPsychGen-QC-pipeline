@@ -22,7 +22,7 @@ Analytic code for the exemplar trio analyses are available in a separate github 
 
 ## 3rd party software
 
-External software dependencies used for this project can be ontaing from the following links:
+External software dependencies used for this project can be obtained from the following links:
 
 * ``plink v1.90b6.18 64-bit (16 Jun 2020)`` (https://www.cog-genomics.org/plink/)
 * ``plink2 v2.00a2.3LM 64-bit Intel (24 Jan 2020)`` (https://www.cog-genomics.org/plink/2.0/)
@@ -34,6 +34,7 @@ External software dependencies used for this project can be ontaing from the fol
 * ``impute4.1.2_r300.3`` (https://jmarchini.org/software/#impute-4)
 * ``impute_v2.3.2`` (https://jmarchini.org/software/#impute-2)
 * ``flashpca_v2`` (https://github.com/gabraham/flashpca/releases/tag/v2.0)
+* ``LiftOver`` (https://genome.ucsc.edu/store.html)
 * COSGAP v1.0.0 containers (``gwas.sif``, ``python3.sif``, ``r.sif`` from https://github.com/comorment/containers/releases/tag/v1.0.0).
 For details see the [documentation](https://cosgap.readthedocs.io/en/latest).
 * ``R 4.0.5`` 
