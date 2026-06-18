@@ -44,6 +44,10 @@ Other resources to be download separately:
 
 - HRC sites file (`HRC/HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz`) - was fetched from [here](http://www.haplotype-reference-consortium.org) but URL no longer works; this is a non-sensitive file listing alleles and their frequencies; see ``imputation-jobs/HRC_sites_download.sh`` for downloadable URLs.
 
+- The Genome Aggregation Database (gnomAD) v3.1.2 genomes chromosome Y sites files, downloadable from [here](https://gnomad.broadinstitute.org/downloads).
+
+- The MitoImpute reference panel restricted to SNPs with minor allele frequency above 0.1%, downloadable from [here](https://github.com/sjfandrews/MitoImpute/tree/master).
+
 - files specific to genotyping chips: 
     ```
     https://www.well.ox.ac.uk/~wrayner/strand/ABtoTOPstrand.html
