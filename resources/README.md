@@ -11,7 +11,7 @@ high-ld.txt - list of high LD regions with their hg19 coordinates
 
 Other resources to be download separately:
 
-- HRC r1.1 reference files require application, then can be fetched from EGA, see [here](https://web2.ega-archive.org/datasets/EGAD00001002729/files)). For HRC r1.1 release notes see [here](https://imputationserver.sph.umich.edu/start.html#!pages/hrc-r1.1).
+- HRC r1.1 reference files require application, then can be fetched from EGA, see [here](https://web2.ega-archive.org/datasets/EGAD00001002729/files). For HRC r1.1 release notes see [here](https://imputationserver.sph.umich.edu/start.html#!pages/hrc-r1.1).
 
     ```
     #.{haplotypes.bcf.gz,haplotypes.bcf.gz.csi,legend.gz,samples}
